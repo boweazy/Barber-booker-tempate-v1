@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, User, Phone, CalendarCheck, Star, MessageCircle } from "lucide-react";
 import { SuccessModal } from "@/components/success-modal";
+import { CalendarView } from "@/components/calendar-view";
 import { useToast } from "@/hooks/use-toast";
 import type { Barber, Service } from "@shared/schema";
 
@@ -159,18 +160,30 @@ export function BookingForm() {
     window.open(whatsappUrl, '_blank');
   };
 
+  const handleCalendarDateSelect = (date: string) => {
+    setSelectedDate(date);
+    form.setValue("date", date);
+  };
+
   return (
-    <div className="grid lg:grid-cols-3 gap-8">
-      {/* Booking Form */}
-      <div className="lg:col-span-2">
-        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100/50 rounded-t-lg">
-            <CardTitle className="text-2xl text-slate-900 flex items-center">
-              <CalendarCheck className="text-blue-600 mr-3" />
-              Book Your Appointment
-            </CardTitle>
-            <p className="text-slate-700 font-medium">Select your preferred barber, date, and time slot</p>
-          </CardHeader>
+    <div className="space-y-8">
+      {/* Calendar Overview */}
+      <CalendarView 
+        onDateSelect={handleCalendarDateSelect}
+        selectedBarber={selectedBarber}
+      />
+      
+      <div className="grid lg:grid-cols-3 gap-8">
+        {/* Booking Form */}
+        <div className="lg:col-span-2">
+          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100/50 rounded-t-lg">
+              <CardTitle className="text-2xl text-slate-900 flex items-center">
+                <CalendarCheck className="text-blue-600 mr-3" />
+                Book Your Appointment
+              </CardTitle>
+              <p className="text-slate-700 font-medium">Select your preferred barber, date, and time slot</p>
+            </CardHeader>
           
           <CardContent className="p-6">
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -462,11 +475,12 @@ export function BookingForm() {
       </div>
 
       {/* Success Modal */}
-      <SuccessModal
-        open={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        bookingDetails={bookingDetails}
-      />
+        <SuccessModal
+          open={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          bookingDetails={bookingDetails}
+        />
+      </div>
     </div>
   );
 }

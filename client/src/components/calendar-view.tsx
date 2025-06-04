@@ -1,0 +1,267 @@
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Calendar, Clock, User } from "lucide-react";
+import type { Booking, Barber, Service } from "@shared/schema";
+
+interface CalendarViewProps {
+  onDateSelect?: (date: string) => void;
+  selectedBarber?: number | null;
+}
+
+export function CalendarView({ onDateSelect, selectedBarber }: CalendarViewProps) {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<string>("");
+
+  // Fetch bookings
+  const { data: bookings = [] } = useQuery({
+    queryKey: ["/api/bookings"],
+    queryFn: api.getBookings,
+  });
+
+  // Fetch barbers
+  const { data: barbers = [] } = useQuery({
+    queryKey: ["/api/barbers"],
+    queryFn: api.getBarbers,
+  });
+
+  // Fetch services
+  const { data: services = [] } = useQuery({
+    queryKey: ["/api/services"],
+    queryFn: api.getServices,
+  });
+
+  // Get current month info
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startingDayOfWeek = firstDay.getDay();
+  const daysInMonth = lastDay.getDate();
+
+  // Create calendar grid
+  const calendarDays = [];
+  
+  // Add empty cells for days before the first day of the month
+  for (let i = 0; i < startingDayOfWeek; i++) {
+    calendarDays.push(null);
+  }
+  
+  // Add days of the month
+  for (let day = 1; day <= daysInMonth; day++) {
+    calendarDays.push(day);
+  }
+
+  const getDateString = (day: number) => {
+    return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  };
+
+  const getBookingsForDate = (day: number) => {
+    const dateString = getDateString(day);
+    return bookings.filter(booking => 
+      booking.date === dateString && 
+      (!selectedBarber || booking.barberId === selectedBarber)
+    );
+  };
+
+  const getBarberName = (barberId: number) => {
+    const barber = barbers.find(b => b.id === barberId);
+    return barber?.name || "Unknown";
+  };
+
+  const getServiceName = (serviceId: number) => {
+    const service = services.find(s => s.id === serviceId);
+    return service?.name || "Unknown";
+  };
+
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
+
+  const isToday = (day: number) => {
+    const today = new Date();
+    return day === today.getDate() && 
+           month === today.getMonth() && 
+           year === today.getFullYear();
+  };
+
+  const isPastDate = (day: number) => {
+    const today = new Date();
+    const dateToCheck = new Date(year, month, day);
+    return dateToCheck < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  };
+
+  const handleDateClick = (day: number) => {
+    if (isPastDate(day)) return;
+    
+    const dateString = getDateString(day);
+    setSelectedDate(dateString);
+    onDateSelect?.(dateString);
+  };
+
+  const navigateMonth = (direction: number) => {
+    setCurrentDate(new Date(year, month + direction, 1));
+  };
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  return (
+    <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100/50 rounded-t-lg">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl text-slate-900 flex items-center">
+            <Calendar className="text-blue-600 mr-2" />
+            Booking Calendar
+          </CardTitle>
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigateMonth(-1)}
+              className="hover:bg-blue-100"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <span className="text-lg font-semibold text-slate-900 min-w-[160px] text-center">
+              {monthNames[month]} {year}
+            </span>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigateMonth(1)}
+              className="hover:bg-blue-100"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+        {selectedBarber && (
+          <p className="text-sm text-slate-600">
+            Showing bookings for: {getBarberName(selectedBarber)}
+          </p>
+        )}
+      </CardHeader>
+      
+      <CardContent className="p-4">
+        {/* Day headers */}
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {dayNames.map(day => (
+            <div key={day} className="p-2 text-center text-sm font-medium text-slate-600">
+              {day}
+            </div>
+          ))}
+        </div>
+        
+        {/* Calendar grid */}
+        <div className="grid grid-cols-7 gap-1">
+          {calendarDays.map((day, index) => {
+            if (day === null) {
+              return <div key={index} className="p-2 h-24"></div>;
+            }
+            
+            const dayBookings = getBookingsForDate(day);
+            const dateString = getDateString(day);
+            const isSelectedDate = selectedDate === dateString;
+            const todayClass = isToday(day);
+            const pastDate = isPastDate(day);
+            
+            return (
+              <div
+                key={day}
+                onClick={() => handleDateClick(day)}
+                className={`
+                  p-2 h-24 border border-slate-200 rounded-lg cursor-pointer transition-all duration-200 overflow-hidden
+                  ${isSelectedDate 
+                    ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-blue-500 shadow-lg' 
+                    : pastDate
+                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    : todayClass
+                    ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300 hover:bg-gradient-to-br hover:from-green-100 hover:to-emerald-100'
+                    : dayBookings.length > 0
+                    ? 'bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200 hover:bg-gradient-to-br hover:from-orange-100 hover:to-amber-100'
+                    : 'bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:border-blue-300'
+                  }
+                `}
+              >
+                <div className={`text-sm font-semibold ${isSelectedDate ? 'text-white' : todayClass ? 'text-green-700' : 'text-slate-900'}`}>
+                  {day}
+                </div>
+                
+                {/* Booking indicators */}
+                <div className="mt-1 space-y-1">
+                  {dayBookings.slice(0, 2).map((booking, idx) => (
+                    <div
+                      key={booking.id}
+                      className={`text-xs p-1 rounded truncate ${
+                        isSelectedDate 
+                          ? 'bg-white/20 text-white' 
+                          : 'bg-blue-100 text-blue-800'
+                      }`}
+                      title={`${formatTime(booking.time)} - ${booking.customerName} (${getServiceName(booking.serviceId)})`}
+                    >
+                      <div className="flex items-center space-x-1">
+                        <Clock className="w-3 h-3" />
+                        <span>{formatTime(booking.time)}</span>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {dayBookings.length > 2 && (
+                    <div className={`text-xs p-1 rounded text-center ${
+                      isSelectedDate 
+                        ? 'bg-white/20 text-white' 
+                        : 'bg-slate-200 text-slate-600'
+                    }`}>
+                      +{dayBookings.length - 2} more
+                    </div>
+                  )}
+                  
+                  {dayBookings.length === 0 && !pastDate && (
+                    <div className={`text-xs p-1 rounded text-center ${
+                      isSelectedDate 
+                        ? 'bg-white/20 text-white' 
+                        : 'bg-green-100 text-green-600'
+                    }`}>
+                      Available
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        
+        {/* Legend */}
+        <div className="mt-4 flex flex-wrap gap-4 text-xs">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-300 rounded"></div>
+            <span className="text-slate-600">Today</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-green-100 rounded"></div>
+            <span className="text-slate-600">Available</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded"></div>
+            <span className="text-slate-600">Has Bookings</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded"></div>
+            <span className="text-slate-600">Selected</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
