@@ -169,8 +169,14 @@ export class MemStorage implements IStorage {
   async createBooking(insertBooking: InsertBooking): Promise<Booking> {
     const id = this.currentBookingId++;
     const booking: Booking = { 
-      ...insertBooking, 
       id,
+      customerName: insertBooking.customerName,
+      customerPhone: insertBooking.customerPhone,
+      barberId: insertBooking.barberId,
+      serviceId: insertBooking.serviceId,
+      date: insertBooking.date,
+      time: insertBooking.time,
+      status: insertBooking.status,
       createdAt: new Date()
     };
     this.bookings.set(id, booking);

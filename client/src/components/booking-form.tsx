@@ -29,6 +29,7 @@ export function BookingForm() {
   const [selectedBarber, setSelectedBarber] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedService, setSelectedService] = useState<number | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [bookingDetails, setBookingDetails] = useState<any>(null);
   
@@ -87,6 +88,7 @@ export function BookingForm() {
       setSelectedBarber(null);
       setSelectedDate("");
       setSelectedTime("");
+      setSelectedService(null);
     },
     onError: (error: any) => {
       toast({
@@ -127,6 +129,12 @@ export function BookingForm() {
       form.setValue("time", selectedTime);
     }
   }, [selectedTime, form]);
+
+  useEffect(() => {
+    if (selectedService) {
+      form.setValue("serviceId", selectedService);
+    }
+  }, [selectedService, form]);
 
   // Set minimum date to today
   const today = new Date().toISOString().split('T')[0];
@@ -305,13 +313,15 @@ export function BookingForm() {
                       <input
                         type="radio"
                         id={`service-${service.id}`}
-                        {...form.register("serviceId", { valueAsNumber: true })}
+                        name="service"
                         value={service.id}
                         className="sr-only peer"
+                        checked={selectedService === service.id}
+                        onChange={() => setSelectedService(service.id)}
                       />
                       <label
                         htmlFor={`service-${service.id}`}
-                        className="flex items-center justify-between p-3 border border-slate-200 rounded-lg cursor-pointer peer-checked:border-primary peer-checked:bg-blue-50 hover:border-slate-300 transition-all"
+                        className="flex items-center justify-between p-3 border-2 border-slate-200 rounded-lg cursor-pointer peer-checked:border-primary peer-checked:bg-blue-50 hover:border-slate-300 transition-all"
                       >
                         <div>
                           <div className="font-medium text-slate-900">{service.name}</div>
@@ -383,14 +393,14 @@ export function BookingForm() {
             <div className="flex justify-between">
               <span className="text-slate-600">Service:</span>
               <span className="font-medium text-slate-900">
-                {form.watch("serviceId") ? services.find(s => s.id === form.watch("serviceId"))?.name : "Not selected"}
+                {selectedService ? services.find(s => s.id === selectedService)?.name : "Not selected"}
               </span>
             </div>
             <hr className="border-slate-200" />
             <div className="flex justify-between text-lg font-bold">
               <span className="text-slate-900">Total:</span>
               <span className="text-primary">
-                {form.watch("serviceId") ? formatPrice(services.find(s => s.id === form.watch("serviceId"))?.price || 0) : "$0.00"}
+                {selectedService ? formatPrice(services.find(s => s.id === selectedService)?.price || 0) : "$0.00"}
               </span>
             </div>
           </CardContent>
