@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SmartFlow Booking</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <h1>Book an Appointment</h1>
+  <form action="/book" method="POST">
+    <label>Barber:</label>
+    <select name="barber" id="barber" required>
+      <option value="">-- Choose Barber --</option>
+      <option value="Alice">Alice</option>
+      <option value="Bob">Bob</option>
+    </select><br><br>
+
+    <label>Date:</label>
+    <input type="date" name="date" required><br><br>
+
+    <label>Time:</label>
+    <select name="time" id="timeSelect" required>
+      <option value="">-- Select a time --</option>
+    </select><br><br>
+
+    <label>Your Name:</label>
+    <input type="text" name="name" required><br><br>
+
+    <button type="submit">Book Appointment</button>
+  </form>
+
+  <!-- ✅ WhatsApp Button -->
+  <a
+    href="https://wa.me/447123456789?text=Hi%2C%20I’d%20like%20to%20book%20an%20appointment"
+    target="_blank"
+    style="display:inline-block; background-color:#25D366; color:white; padding:12px 20px; border-radius:6px; text-decoration:none; font-weight:bold; font-size:16px; margin-top:20px;"
+  >
+    💬 Message Us on WhatsApp
+  </a>
+
+  <!-- 📅 Smart Time Dropdown Script -->
+  <script>
+    const barberSelect = document.getElementById("barber");
+    const dateInput = document.querySelector("input[name='date']");
+    const timeSelect = document.getElementById("timeSelect");
+
+    async function loadAvailableTimes() {
+      const barber = barberSelect.value;
+      const date = dateInput.value;
+
+      if (!barber || !date) return;
+
+      const res = await fetch(`/available-times?barber=${barber}&date=${date}`);
+      const data = await res.json();
+
+      timeSelect.innerHTML = '<option value="">-- Select a time --</option>';
+
+      data.available.forEach(t => {
+        const option = document.createElement("option");
+        option.value = t;
+        option.textContent = t;
+        timeSelect.appendChild(option);
+      });
+    }
+
+    barberSelect.addEventListener("change", loadAvailableTimes);
+    dateInput.addEventListener("change", loadAvailableTimes);
+  </script>
+</body>
+</html>

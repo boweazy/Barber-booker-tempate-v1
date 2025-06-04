@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, User, Phone, CalendarCheck, Star } from "lucide-react";
+import { Calendar, Clock, User, Phone, CalendarCheck, Star, MessageCircle } from "lucide-react";
 import { SuccessModal } from "@/components/success-modal";
 import { useToast } from "@/hooks/use-toast";
 import type { Barber, Service } from "@shared/schema";
@@ -149,6 +149,14 @@ export function BookingForm() {
 
   const formatPrice = (priceInCents: number) => {
     return `$${(priceInCents / 100).toFixed(2)}`;
+  };
+
+  const openWhatsApp = () => {
+    const phoneNumber = "1234567890"; // Replace with your actual WhatsApp number
+    const message = "Hi, I'd like to book an appointment at BarberShop Pro. Can you help me with scheduling?";
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
@@ -355,6 +363,22 @@ export function BookingForm() {
                       Book Appointment
                     </>
                   )}
+                </Button>
+              </div>
+
+              {/* WhatsApp Button */}
+              <div className="pt-4 border-t border-slate-200">
+                <div className="text-center mb-3">
+                  <p className="text-sm text-slate-600">Need help or have questions?</p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={openWhatsApp}
+                  className="w-full py-4 text-lg font-semibold bg-green-500 hover:bg-green-600 text-white border-0"
+                  variant="outline"
+                >
+                  <MessageCircle className="mr-2" />
+                  Chat on WhatsApp
                 </Button>
               </div>
             </form>
