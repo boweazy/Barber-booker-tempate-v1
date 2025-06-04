@@ -9,6 +9,8 @@ import {
   type InsertService, 
   type InsertBooking 
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
   // Barbers
@@ -176,7 +178,7 @@ export class MemStorage implements IStorage {
       serviceId: insertBooking.serviceId,
       date: insertBooking.date,
       time: insertBooking.time,
-      status: insertBooking.status,
+      status: insertBooking.status || "confirmed",
       createdAt: new Date()
     };
     this.bookings.set(id, booking);
@@ -207,4 +209,160 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  constructor() {
+    this.initializeDefaultData();
+  }
+
+  private async initializeDefaultData() {
+    // Check if barbers already exist
+    const existingBarbers = await this.getBarbers();
+    if (existingBarbers.length > 0) return;
+
+    // Create default barbers
+    const defaultBarbers: InsertBarber[] = [
+      {
+        name: "John Doe",
+        title: "Senior Barber",
+        experience: "8 years exp",
+        rating: "4.9 (127 reviews)",
+        avatar: "JD"
+      },
+      {
+        name: "Mike Smith",
+        title: "Master Barber",
+        experience: "12 years exp",
+        rating: "4.8 (203 reviews)",
+        avatar: "MS"
+      },
+      {
+        name: "Alex Johnson",
+        title: "Specialist",
+        experience: "6 years exp",
+        rating: "4.7 (89 reviews)",
+        avatar: "AJ"
+      },
+      {
+        name: "Carlos Rivera",
+        title: "Style Expert",
+        experience: "10 years exp",
+        rating: "4.9 (156 reviews)",
+        avatar: "CR"
+      }
+    ];
+
+    // Create default services
+    const defaultServices: InsertService[] = [
+      {
+        name: "Classic Haircut",
+        duration: 30,
+        price: 2500 // $25.00
+      },
+      {
+        name: "Haircut + Beard",
+        duration: 45,
+        price: 4000 // $40.00
+      },
+      {
+        name: "Premium Package",
+        duration: 60,
+        price: 6000 // $60.00
+      },
+      {
+        name: "Beard Trim",
+        duration: 20,
+        price: 1500 // $15.00
+      }
+    ];
+
+    // Initialize barbers
+    for (const barber of defaultBarbers) {
+      await this.createBarber(barber);
+    }
+
+    // Initialize services
+    for (const service of defaultServices) {
+      await this.createService(service);
+    }
+  }
+
+  // Barber methods
+  async getBarbers(): Promise<Barber[]> {
+    return await db.select().from(barbers);
+  }
+
+  async getBarber(id: number): Promise<Barber | undefined> {
+    const [barber] = await db.select().from(barbers).where(eq(barbers.id, id));
+    return barber || undefined;
+  }
+
+  async createBarber(insertBarber: InsertBarber): Promise<Barber> {
+    const [barber] = await db
+      .insert(barbers)
+      .values(insertBarber)
+      .returning();
+    return barber;
+  }
+
+  // Service methods
+  async getServices(): Promise<Service[]> {
+    return await db.select().from(services);
+  }
+
+  async getService(id: number): Promise<Service | undefined> {
+    const [service] = await db.select().from(services).where(eq(services.id, id));
+    return service || undefined;
+  }
+
+  async createService(insertService: InsertService): Promise<Service> {
+    const [service] = await db
+      .insert(services)
+      .values(insertService)
+      .returning();
+    return service;
+  }
+
+  // Booking methods
+  async getBookings(): Promise<Booking[]> {
+    return await db.select().from(bookings).orderBy(bookings.createdAt);
+  }
+
+  async getBooking(id: number): Promise<Booking | undefined> {
+    const [booking] = await db.select().from(bookings).where(eq(bookings.id, id));
+    return booking || undefined;
+  }
+
+  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+    const [booking] = await db
+      .insert(bookings)
+      .values(insertBooking)
+      .returning();
+    return booking;
+  }
+
+  async updateBooking(id: number, updates: Partial<InsertBooking>): Promise<Booking | undefined> {
+    const [booking] = await db
+      .update(bookings)
+      .set(updates)
+      .where(eq(bookings.id, id))
+      .returning();
+    return booking || undefined;
+  }
+
+  async deleteBooking(id: number): Promise<boolean> {
+    const result = await db.delete(bookings).where(eq(bookings.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  async getBookingsByDate(date: string): Promise<Booking[]> {
+    return await db.select().from(bookings).where(eq(bookings.date, date));
+  }
+
+  async getBookingsByBarberAndDate(barberId: number, date: string): Promise<Booking[]> {
+    return await db.select().from(bookings).where(
+      and(eq(bookings.barberId, barberId), eq(bookings.date, date))
+    );
+  }
+}
+
+export const storage = new DatabaseStorage();
