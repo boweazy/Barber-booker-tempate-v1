@@ -175,7 +175,7 @@ export function BookingForm() {
           <CardContent className="p-6">
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Barber Selection */}
-              <div className="space-y-3">
+              <div className="space-y-3" data-tour="barber-selection">
                 <Label className="text-sm font-semibold text-slate-700 flex items-center">
                   <User className="text-primary mr-2 w-4 h-4" />
                   Choose Your Barber
@@ -221,7 +221,7 @@ export function BookingForm() {
               </div>
 
               {/* Date Selection */}
-              <div className="space-y-3">
+              <div className="space-y-3" data-tour="date-selection">
                 <Label htmlFor="date" className="text-sm font-semibold text-slate-700 flex items-center">
                   <Calendar className="text-primary mr-2 w-4 h-4" />
                   Select Date
@@ -276,7 +276,7 @@ export function BookingForm() {
               )}
 
               {/* Customer Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-tour="customer-info">
                 <div className="space-y-2">
                   <Label htmlFor="customerName" className="text-sm font-semibold text-slate-700 flex items-center">
                     <User className="text-primary mr-2 w-4 h-4" />
@@ -310,7 +310,7 @@ export function BookingForm() {
               </div>
 
               {/* Service Selection */}
-              <div className="space-y-3">
+              <div className="space-y-3" data-tour="service-selection">
                 <Label className="text-sm font-semibold text-slate-700 flex items-center">
                   <i className="fas fa-scissors text-primary mr-2"></i>
                   Select Service
@@ -387,7 +387,7 @@ export function BookingForm() {
       </div>
 
       {/* Booking Summary */}
-      <div className="space-y-6">
+      <div className="space-y-6" data-tour="booking-summary">
         <Card className="shadow-sm border-slate-200">
           <CardHeader>
             <CardTitle className="text-lg text-slate-900 flex items-center">
