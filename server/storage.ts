@@ -1,12 +1,15 @@
 import { 
   barbers, 
   services, 
+  clients,
   bookings, 
   type Barber, 
   type Service, 
+  type Client,
   type Booking, 
   type InsertBarber, 
   type InsertService, 
+  type InsertClient,
   type InsertBooking 
 } from "@shared/schema";
 import { db } from "./db";
@@ -23,6 +26,13 @@ export interface IStorage {
   getService(id: number): Promise<Service | undefined>;
   createService(service: InsertService): Promise<Service>;
 
+  // Clients
+  getClients(): Promise<Client[]>;
+  getClient(id: number): Promise<Client | undefined>;
+  getClientByPhone(phone: string): Promise<Client | undefined>;
+  createClient(client: InsertClient): Promise<Client>;
+  updateClient(id: number, updates: Partial<InsertClient>): Promise<Client | undefined>;
+
   // Bookings
   getBookings(): Promise<Booking[]>;
   getBooking(id: number): Promise<Booking | undefined>;
@@ -31,22 +41,27 @@ export interface IStorage {
   deleteBooking(id: number): Promise<boolean>;
   getBookingsByDate(date: string): Promise<Booking[]>;
   getBookingsByBarberAndDate(barberId: number, date: string): Promise<Booking[]>;
+  getBookingsByClient(clientId: number): Promise<Booking[]>;
 }
 
 export class MemStorage implements IStorage {
   private barbers: Map<number, Barber>;
   private services: Map<number, Service>;
+  private clients: Map<number, Client>;
   private bookings: Map<number, Booking>;
   private currentBarberId: number;
   private currentServiceId: number;
+  private currentClientId: number;
   private currentBookingId: number;
 
   constructor() {
     this.barbers = new Map();
     this.services = new Map();
+    this.clients = new Map();
     this.bookings = new Map();
     this.currentBarberId = 1;
     this.currentServiceId = 1;
+    this.currentClientId = 1;
     this.currentBookingId = 1;
     
     // Initialize with default data
@@ -205,6 +220,47 @@ export class MemStorage implements IStorage {
   async getBookingsByBarberAndDate(barberId: number, date: string): Promise<Booking[]> {
     return Array.from(this.bookings.values()).filter(
       booking => booking.barberId === barberId && booking.date === date
+    );
+  }
+
+  // Client methods
+  async getClients(): Promise<Client[]> {
+    return Array.from(this.clients.values());
+  }
+
+  async getClient(id: number): Promise<Client | undefined> {
+    return this.clients.get(id);
+  }
+
+  async getClientByPhone(phone: string): Promise<Client | undefined> {
+    return Array.from(this.clients.values()).find(client => client.phone === phone);
+  }
+
+  async createClient(insertClient: InsertClient): Promise<Client> {
+    const id = this.currentClientId++;
+    const client: Client = { 
+      ...insertClient, 
+      id,
+      totalVisits: insertClient.totalVisits || 0,
+      loyaltyPoints: insertClient.loyaltyPoints || 0,
+      createdAt: new Date()
+    };
+    this.clients.set(id, client);
+    return client;
+  }
+
+  async updateClient(id: number, updates: Partial<InsertClient>): Promise<Client | undefined> {
+    const client = this.clients.get(id);
+    if (!client) return undefined;
+    
+    const updatedClient: Client = { ...client, ...updates };
+    this.clients.set(id, updatedClient);
+    return updatedClient;
+  }
+
+  async getBookingsByClient(clientId: number): Promise<Booking[]> {
+    return Array.from(this.bookings.values()).filter(
+      booking => booking.clientId === clientId
     );
   }
 }
