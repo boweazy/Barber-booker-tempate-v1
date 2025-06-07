@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertBookingSchema } from "@shared/schema";
+import { insertBookingSchema, insertClientSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -22,6 +22,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(services);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch services" });
+    }
+  });
+
+  // Client routes
+  app.get("/api/clients", async (req, res) => {
+    try {
+      const clients = await storage.getClients();
+      res.json(clients);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+      res.status(500).json({ error: "Failed to fetch clients" });
+    }
+  });
+
+  app.get("/api/clients/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const client = await storage.getClient(id);
+      if (!client) {
+        return res.status(404).json({ error: "Client not found" });
+      }
+      res.json(client);
+    } catch (error) {
+      console.error("Error fetching client:", error);
+      res.status(500).json({ error: "Failed to fetch client" });
+    }
+  });
+
+  app.get("/api/clients/phone/:phone", async (req, res) => {
+    try {
+      const phone = req.params.phone;
+      const client = await storage.getClientByPhone(phone);
+      if (!client) {
+        return res.status(404).json({ error: "Client not found" });
+      }
+      res.json(client);
+    } catch (error) {
+      console.error("Error fetching client by phone:", error);
+      res.status(500).json({ error: "Failed to fetch client" });
+    }
+  });
+
+  app.post("/api/clients", async (req, res) => {
+    try {
+      const result = insertClientSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          error: "Invalid client data", 
+          details: result.error.errors 
+        });
+      }
+      
+      const client = await storage.createClient(result.data);
+      res.status(201).json(client);
+    } catch (error) {
+      console.error("Error creating client:", error);
+      res.status(500).json({ error: "Failed to create client" });
+    }
+  });
+
+  app.patch("/api/clients/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const client = await storage.updateClient(id, updates);
+      if (!client) {
+        return res.status(404).json({ error: "Client not found" });
+      }
+      res.json(client);
+    } catch (error) {
+      console.error("Error updating client:", error);
+      res.status(500).json({ error: "Failed to update client" });
     }
   });
 

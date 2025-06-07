@@ -186,14 +186,13 @@ export class MemStorage implements IStorage {
   async createBooking(insertBooking: InsertBooking): Promise<Booking> {
     const id = this.currentBookingId++;
     const booking: Booking = { 
+      ...insertBooking,
       id,
-      customerName: insertBooking.customerName,
-      customerPhone: insertBooking.customerPhone,
-      barberId: insertBooking.barberId,
-      serviceId: insertBooking.serviceId,
-      date: insertBooking.date,
-      time: insertBooking.time,
+      clientId: insertBooking.clientId || null,
       status: insertBooking.status || "confirmed",
+      notes: insertBooking.notes || null,
+      reminderSent: null,
+      depositAmount: insertBooking.depositAmount || null,
       createdAt: new Date()
     };
     this.bookings.set(id, booking);
@@ -239,8 +238,12 @@ export class MemStorage implements IStorage {
   async createClient(insertClient: InsertClient): Promise<Client> {
     const id = this.currentClientId++;
     const client: Client = { 
-      ...insertClient, 
+      ...insertClient,
       id,
+      email: insertClient.email || null,
+      preferredBarberId: insertClient.preferredBarberId || null,
+      preferences: insertClient.preferences || null,
+      notes: insertClient.notes || null,
       totalVisits: insertClient.totalVisits || 0,
       loyaltyPoints: insertClient.loyaltyPoints || 0,
       createdAt: new Date()
@@ -418,6 +421,42 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(bookings).where(
       and(eq(bookings.barberId, barberId), eq(bookings.date, date))
     );
+  }
+
+  // Client methods
+  async getClients(): Promise<Client[]> {
+    return await db.select().from(clients);
+  }
+
+  async getClient(id: number): Promise<Client | undefined> {
+    const [client] = await db.select().from(clients).where(eq(clients.id, id));
+    return client || undefined;
+  }
+
+  async getClientByPhone(phone: string): Promise<Client | undefined> {
+    const [client] = await db.select().from(clients).where(eq(clients.phone, phone));
+    return client || undefined;
+  }
+
+  async createClient(insertClient: InsertClient): Promise<Client> {
+    const [client] = await db
+      .insert(clients)
+      .values(insertClient)
+      .returning();
+    return client;
+  }
+
+  async updateClient(id: number, updates: Partial<InsertClient>): Promise<Client | undefined> {
+    const [client] = await db
+      .update(clients)
+      .set(updates)
+      .where(eq(clients.id, id))
+      .returning();
+    return client || undefined;
+  }
+
+  async getBookingsByClient(clientId: number): Promise<Booking[]> {
+    return await db.select().from(bookings).where(eq(bookings.clientId, clientId));
   }
 }
 
