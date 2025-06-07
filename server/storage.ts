@@ -312,7 +312,8 @@ export class MemStorage implements IStorage {
 
 export class DatabaseStorage implements IStorage {
   constructor() {
-    this.initializeDefaultData();
+    // Initialize data asynchronously to avoid blocking server startup
+    this.initializeDefaultData().catch(console.error);
   }
 
   private async initializeDefaultData() {
