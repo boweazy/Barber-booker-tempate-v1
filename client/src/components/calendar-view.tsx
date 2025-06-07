@@ -333,6 +333,21 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
           </div>
         </div>
       </CardContent>
+
+      {/* Time Slot Selector Modal */}
+      <TimeSlotSelector
+        isOpen={showTimeSelector}
+        onClose={() => setShowTimeSelector(false)}
+        selectedDate={timeSelectorDate}
+        selectedBarber={selectedBarber}
+        onTimeSelect={(time) => {
+          setSelectedDate(timeSelectorDate);
+          onDateSelect?.(timeSelectorDate);
+        }}
+        onQuickBook={(date, time, barberId) => {
+          onQuickBook?.(date, barberId);
+        }}
+      />
     </Card>
   );
 }
