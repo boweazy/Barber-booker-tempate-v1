@@ -19,7 +19,10 @@ export class GoogleAuthService {
 
   constructor() {
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      throw new Error('Google OAuth2 credentials not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.');
+      console.warn('⚠️  Google OAuth2 credentials not configured. Calendar integration will be disabled until GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are set.');
+      // Initialize with dummy values to prevent crashes
+      this.oauth2Client = new google.auth.OAuth2('dummy', 'dummy', 'dummy');
+      return;
     }
 
     this.oauth2Client = new google.auth.OAuth2(

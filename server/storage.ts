@@ -276,6 +276,23 @@ export class MemStorage implements IStorage {
       booking => booking.clientId === clientId
     );
   }
+
+  // Google Token methods (not implemented for MemStorage)
+  async getGoogleToken(userId: string): Promise<GoogleToken | undefined> {
+    throw new Error("Google tokens not supported in memory storage");
+  }
+
+  async createGoogleToken(insertToken: InsertGoogleToken): Promise<GoogleToken> {
+    throw new Error("Google tokens not supported in memory storage");
+  }
+
+  async updateGoogleToken(userId: string, updates: Partial<InsertGoogleToken>): Promise<GoogleToken | undefined> {
+    throw new Error("Google tokens not supported in memory storage");
+  }
+
+  async deleteGoogleToken(userId: string): Promise<boolean> {
+    throw new Error("Google tokens not supported in memory storage");
+  }
 }
 
 export class DatabaseStorage implements IStorage {

@@ -5,12 +5,13 @@ import { OnboardingTour } from "@/components/onboarding-tour";
 import { LoyaltyProgram } from "@/components/loyalty-program";
 import { NotificationSettings } from "@/components/notification-settings";
 import { CancellationPolicy } from "@/components/cancellation-policy";
+import { GoogleOAuthSetup } from "@/components/google-oauth-setup";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarPlus, Settings, HelpCircle, Gift, Bell, Shield, Star } from "lucide-react";
+import { CalendarPlus, Settings, HelpCircle, Gift, Bell, Shield, Star, Calendar } from "lucide-react";
 
 export default function Home() {
-  const [activeView, setActiveView] = useState<"booking" | "admin" | "features">("booking");
+  const [activeView, setActiveView] = useState<"booking" | "admin" | "features" | "oauth">("booking");
   const [showTour, setShowTour] = useState(false);
   const [showLoyalty, setShowLoyalty] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -89,6 +90,14 @@ export default function Home() {
                 <span>Admin Panel</span>
               </Button>
               <Button
+                variant={activeView === "oauth" ? "default" : "ghost"}
+                onClick={() => setActiveView("oauth")}
+                className="flex items-center space-x-2"
+              >
+                <Calendar className="w-4 h-4" />
+                <span>Calendar Setup</span>
+              </Button>
+              <Button
                 variant="ghost"
                 onClick={startTour}
                 className="flex items-center space-x-2 text-slate-600 hover:text-slate-900"
@@ -106,6 +115,7 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeView === "booking" && <BookingForm />}
         {activeView === "admin" && <AdminDashboard />}
+        {activeView === "oauth" && <GoogleOAuthSetup />}
         {activeView === "features" && (
           <div className="space-y-8">
             {/* Features Header */}
