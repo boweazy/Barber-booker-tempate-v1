@@ -137,7 +137,15 @@ export class MemStorage implements IStorage {
     // Initialize barbers
     defaultBarbers.forEach(barber => {
       const id = this.currentBarberId++;
-      this.barbers.set(id, { ...barber, id });
+      const fullBarber: Barber = { 
+        ...barber, 
+        id,
+        bio: barber.bio || null,
+        specialties: barber.specialties || null,
+        phone: barber.phone || null,
+        instagram: barber.instagram || null
+      };
+      this.barbers.set(id, fullBarber);
     });
 
     // Initialize services
@@ -158,7 +166,14 @@ export class MemStorage implements IStorage {
 
   async createBarber(insertBarber: InsertBarber): Promise<Barber> {
     const id = this.currentBarberId++;
-    const barber: Barber = { ...insertBarber, id };
+    const barber: Barber = { 
+      ...insertBarber, 
+      id,
+      bio: insertBarber.bio || null,
+      specialties: insertBarber.specialties || null,
+      phone: insertBarber.phone || null,
+      instagram: insertBarber.instagram || null
+    };
     this.barbers.set(id, barber);
     return barber;
   }
@@ -511,7 +526,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteGoogleToken(userId: string): Promise<boolean> {
     const result = await db.delete(googleTokens).where(eq(googleTokens.userId, userId));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 }
 
