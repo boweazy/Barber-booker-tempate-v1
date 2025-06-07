@@ -102,7 +102,7 @@ export function OnboardingTour({ isVisible, onComplete }: OnboardingTourProps) {
     window.addEventListener('resize', updatePosition);
     
     return () => window.removeEventListener('resize', updatePosition);
-  }, [currentStep, isVisible, currentTourStep]);
+  }, [currentStep, isVisible]);
 
   if (!isVisible) return null;
 

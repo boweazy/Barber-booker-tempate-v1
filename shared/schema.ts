@@ -35,6 +35,16 @@ export const clients = pgTable("clients", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const googleTokens = pgTable("google_tokens", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull().unique(),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  expiryDate: timestamp("expiry_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const bookings = pgTable("bookings", {
   id: serial("id").primaryKey(),
   clientId: integer("client_id"),
@@ -48,6 +58,7 @@ export const bookings = pgTable("bookings", {
   notes: text("notes"),
   reminderSent: timestamp("reminder_sent"),
   depositAmount: integer("deposit_amount").default(0),
+  googleEventId: text("google_event_id"), // For calendar sync
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -64,6 +75,12 @@ export const insertClientSchema = createInsertSchema(clients).omit({
   createdAt: true,
 });
 
+export const insertGoogleTokenSchema = createInsertSchema(googleTokens).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertBookingSchema = createInsertSchema(bookings).omit({
   id: true,
   createdAt: true,
@@ -77,6 +94,9 @@ export type Service = typeof services.$inferSelect;
 
 export type InsertClient = z.infer<typeof insertClientSchema>;
 export type Client = typeof clients.$inferSelect;
+
+export type InsertGoogleToken = z.infer<typeof insertGoogleTokenSchema>;
+export type GoogleToken = typeof googleTokens.$inferSelect;
 
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
 export type Booking = typeof bookings.$inferSelect;
