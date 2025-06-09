@@ -5,7 +5,7 @@ import type { OAuth2Client } from 'google-auth-library';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const REDIRECT_URI = process.env.NODE_ENV === 'production' 
-  ? 'https://barber-booker-boweaz-y123.repl.co/auth/google/callback'
+  ? 'https://barber-booker-boweazy123.replit.app/auth/google/callback'
   : 'http://localhost:5000/auth/google/callback';
 
 // OAuth2 scopes for Google Calendar access

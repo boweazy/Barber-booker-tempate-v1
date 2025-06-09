@@ -30,7 +30,7 @@
    - Application type: "Web application"
    - Name: "Barbershop Calendar Integration"
    - Authorized redirect URIs:
-     - `https://barber-booker-boweaz-y123.repl.co/auth/google/callback`
+     - `https://barber-booker-boweazy123.replit.app/auth/google/callback`
      - `http://localhost:5000/auth/google/callback` (for local testing)
 
 ## Step 4: Configure Replit Secrets
@@ -42,7 +42,7 @@
 
 ## Step 5: Test the Integration
 
-1. Navigate to: `https://barber-booker-boweaz-y123.repl.co/auth/google`
+1. Navigate to: `https://barber-booker-boweazy123.replit.app/auth/google`
 2. You should be redirected to Google's consent screen
 3. Grant calendar permissions
 4. You'll be redirected back with a success message
