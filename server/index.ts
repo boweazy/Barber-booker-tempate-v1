@@ -56,8 +56,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Port configuration for Replit compatibility
-  const port = 5000;
+  // Port configuration for deployment
+  const port = parseInt(process.env.PORT || "5000", 10);
   
   server.listen({
     port,
