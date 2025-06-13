@@ -18,7 +18,7 @@ const getRedirectUri = () => {
   }
   
   // Fallback for local development
-  return 'http://localhost:5000/auth/google/callback';
+  return 'http://localhost:3000/auth/google/callback';
 };
 
 const REDIRECT_URI = getRedirectUri();

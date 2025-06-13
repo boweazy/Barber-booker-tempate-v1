@@ -56,8 +56,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Port configuration - force port 5000 for workflow compatibility
-  const port = 5000;
+  // Port configuration - use port 3000 for deployment compatibility
+  const port = process.env.NODE_ENV === "production" ? 3000 : 5000;
   
   server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);

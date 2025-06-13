@@ -277,7 +277,7 @@ export async function registerRoutes(app: Express) {
       status: "healthy", 
       timestamp: new Date().toISOString(),
       domain: req.hostname,
-      port: process.env.PORT || 5000
+      port: process.env.PORT || (process.env.NODE_ENV === "production" ? 3000 : 5000)
     });
   });
 
