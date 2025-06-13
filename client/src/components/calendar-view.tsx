@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TimeSlotSelector } from "@/components/time-slot-selector";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { ChevronLeft, ChevronRight, Calendar, Clock, User } from "lucide-react";
 import type { Booking, Barber, Service } from "@shared/schema";
 
@@ -18,6 +19,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [showTimeSelector, setShowTimeSelector] = useState(false);
   const [timeSelectorDate, setTimeSelectorDate] = useState<string>("");
+  const isMobile = useIsMobile();
 
   // Fetch bookings
   const { data: bookings = [] } = useQuery({
@@ -150,30 +152,30 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <Card className="shadow-xl border-0 bg-slate-800/95 backdrop-blur-sm">
+    <Card className="shadow-xl border-0 bg-slate-800/95 backdrop-blur-sm w-full max-w-full overflow-hidden">
       <CardHeader className="bg-gradient-to-r from-slate-700 to-slate-600 border-b border-slate-600/50 rounded-t-lg">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl text-white flex items-center">
-            <Calendar className="text-blue-600 mr-2" />
-            Booking Calendar
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <CardTitle className="text-lg sm:text-xl text-white flex items-center">
+            <Calendar className="text-blue-600 mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="truncate">Booking Calendar</span>
           </CardTitle>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2">
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => navigateMonth(-1)}
-              className="hover:bg-blue-100"
+              className="hover:bg-blue-100 h-8 w-8 p-0"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <span className="text-lg font-semibold text-slate-900 min-w-[160px] text-center">
+            <span className="text-sm sm:text-lg font-semibold text-slate-900 min-w-[120px] sm:min-w-[160px] text-center px-1">
               {monthNames[month]} {year}
             </span>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => navigateMonth(1)}
-              className="hover:bg-blue-100"
+              className="hover:bg-blue-100 h-8 w-8 p-0"
             >
               <ChevronRight className="w-4 h-4" />
             </Button>
@@ -186,12 +188,13 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
         )}
       </CardHeader>
       
-      <CardContent className="p-4">
+      <CardContent className="p-2 sm:p-4">
         {/* Day headers */}
         <div className="grid grid-cols-7 gap-1 mb-2">
           {dayNames.map(day => (
-            <div key={day} className="p-2 text-center text-sm font-medium text-slate-600">
-              {day}
+            <div key={day} className="p-1 sm:p-2 text-center text-xs sm:text-sm font-medium text-slate-600">
+              <span className="hidden sm:inline">{day}</span>
+              <span className="sm:hidden">{day.slice(0, 1)}</span>
             </div>
           ))}
         </div>
@@ -214,7 +217,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
                 key={day}
                 onClick={() => handleDateClick(day)}
                 className={`
-                  p-3 min-h-32 border border-slate-200 rounded-lg cursor-pointer transition-all duration-200 overflow-hidden
+                  p-1 sm:p-3 min-h-16 sm:min-h-32 border border-slate-200 rounded-lg cursor-pointer transition-all duration-200 overflow-hidden
                   ${isSelectedDate 
                     ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-blue-500 shadow-lg' 
                     : pastDate
@@ -232,11 +235,11 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
                 </div>
                 
                 {/* Booking indicators - improved layout */}
-                <div className="mt-2 space-y-1">
-                  {dayBookings.slice(0, 2).map((booking, idx) => (
+                <div className="mt-1 sm:mt-2 space-y-1">
+                  {dayBookings.slice(0, isMobile ? 1 : 2).map((booking, idx) => (
                     <div
                       key={booking.id}
-                      className={`text-xs px-2 py-1 rounded-md truncate ${
+                      className={`text-xs px-1 sm:px-2 py-1 rounded-md truncate ${
                         isSelectedDate 
                           ? 'bg-white/20 text-white' 
                           : 'bg-blue-100 text-blue-800'
@@ -244,8 +247,8 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
                       title={`${formatTime(booking.time)} - ${booking.customerName} (${getServiceName(booking.serviceId)})`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-medium">{formatTime(booking.time)}</span>
-                        <User className="w-3 h-3" />
+                        <span className="font-medium text-xs">{formatTime(booking.time)}</span>
+                        <User className="w-2 h-2 sm:w-3 sm:h-3" />
                       </div>
                     </div>
                   ))}

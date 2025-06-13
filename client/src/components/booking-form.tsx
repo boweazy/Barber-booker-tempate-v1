@@ -197,17 +197,17 @@ export function BookingForm() {
       
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Booking Form */}
-        <div className="lg:col-span-2" data-booking-form>
-          <Card className="shadow-xl border-0 bg-slate-800/95 backdrop-blur-sm">
+        <div className="lg:col-span-2 w-full max-w-full" data-booking-form>
+          <Card className="shadow-xl border-0 bg-slate-800/95 backdrop-blur-sm w-full overflow-hidden">
             <CardHeader className="bg-gradient-to-r from-slate-700 to-slate-600 border-b border-slate-600/50 rounded-t-lg">
-              <CardTitle className="text-2xl text-white flex items-center">
-                <CalendarCheck className="text-blue-400 mr-3" />
+              <CardTitle className="text-lg sm:text-2xl text-white flex items-center">
+                <CalendarCheck className="text-blue-400 mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6" />
                 Book Your Appointment
               </CardTitle>
-              <p className="text-slate-300 font-medium">Select your preferred barber, date, and time slot</p>
+              <p className="text-slate-300 font-medium text-sm sm:text-base">Select your preferred barber, date, and time slot</p>
             </CardHeader>
           
-          <CardContent className="p-6">
+          <CardContent className="p-3 sm:p-6">
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Barber Selection */}
               <div className="space-y-3" data-tour="barber-selection">

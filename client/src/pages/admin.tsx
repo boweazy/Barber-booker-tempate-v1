@@ -140,11 +140,11 @@ export default function Admin() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="container mx-auto px-4 py-8 max-w-full overflow-x-hidden">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
           
           {/* Google Calendar Connection */}
-          <Card className="md:col-span-2">
+          <Card className="lg:col-span-2">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
