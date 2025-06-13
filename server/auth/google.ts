@@ -77,34 +77,54 @@ export class GoogleAuthService {
       console.log('[OAuth] Client ID configured:', GOOGLE_CLIENT_ID ? 'Yes' : 'No');
       console.log('[OAuth] Client Secret configured:', GOOGLE_CLIENT_SECRET ? 'Yes' : 'No');
       
-      // Create a fresh OAuth2 client instance to ensure clean state
-      const oauth2Client = new google.auth.OAuth2(
-        GOOGLE_CLIENT_ID,
-        GOOGLE_CLIENT_SECRET,
-        REDIRECT_URI
-      );
-      
-      const { tokens } = await oauth2Client.getToken(code);
+      // Make direct HTTP request to avoid PKCE issues with the client library
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          client_id: GOOGLE_CLIENT_ID!,
+          client_secret: GOOGLE_CLIENT_SECRET!,
+          code: code,
+          grant_type: 'authorization_code',
+          redirect_uri: REDIRECT_URI,
+        }),
+      });
+
+      if (!tokenResponse.ok) {
+        const errorData = await tokenResponse.json();
+        console.error('[OAuth] Token exchange failed:', errorData);
+        throw new Error(`Token exchange failed: ${errorData.error_description || errorData.error}`);
+      }
+
+      const tokens = await tokenResponse.json();
       
       console.log('[OAuth] Token exchange response:', {
         has_access_token: !!tokens.access_token,
         has_refresh_token: !!tokens.refresh_token,
-        has_expiry_date: !!tokens.expiry_date,
+        has_expires_in: !!tokens.expires_in,
         token_type: tokens.token_type,
         scope: tokens.scope
       });
       
-      if (!tokens.access_token || !tokens.expiry_date) {
+      if (!tokens.access_token || !tokens.expires_in) {
         throw new Error('Missing required tokens in Google response');
       }
 
+      const expiryDate = Date.now() + (tokens.expires_in * 1000);
+
       // Update the instance client with new credentials
-      this.oauth2Client.setCredentials(tokens);
+      this.oauth2Client.setCredentials({
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        expiry_date: expiryDate
+      });
 
       return {
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token || '',
-        expiry_date: tokens.expiry_date
+        expiry_date: expiryDate
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
