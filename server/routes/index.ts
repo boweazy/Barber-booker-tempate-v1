@@ -271,6 +271,21 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Health check for external connectivity
+  app.get("/health", (req, res) => {
+    res.json({ 
+      status: "healthy", 
+      timestamp: new Date().toISOString(),
+      domain: req.hostname,
+      port: process.env.PORT || 5000
+    });
+  });
+
+  // Simple connectivity test
+  app.get("/test", (req, res) => {
+    res.send(`<h1>Server is running!</h1><p>Domain: ${req.hostname}</p><p>Time: ${new Date().toISOString()}</p>`);
+  });
+
   // Google OAuth2 routes
   app.get("/auth/google", async (req, res) => {
     try {
