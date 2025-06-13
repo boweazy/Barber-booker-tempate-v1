@@ -311,6 +311,10 @@ export class MemStorage implements IStorage {
     throw new Error("Google tokens not supported in memory storage");
   }
 
+  async getGoogleTokens(): Promise<GoogleToken[]> {
+    throw new Error("Google tokens not supported in memory storage");
+  }
+
   async createGoogleToken(insertToken: InsertGoogleToken): Promise<GoogleToken> {
     throw new Error("Google tokens not supported in memory storage");
   }
