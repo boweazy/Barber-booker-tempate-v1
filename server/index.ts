@@ -1,5 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "./routes/index";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
@@ -57,7 +57,7 @@ app.use((req, res, next) => {
   }
 
   // Port configuration for Replit compatibility
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
+  const port = 5000;
   
   server.listen({
     port,

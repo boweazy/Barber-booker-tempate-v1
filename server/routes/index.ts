@@ -322,8 +322,7 @@ export async function registerRoutes(app: Express) {
         userId: state,
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
-        expiryDate: new Date(tokens.expiry_date),
-        scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events'
+        expiryDate: new Date(tokens.expiry_date)
       });
 
       if (!savedToken) {
