@@ -41,6 +41,7 @@ export interface IStorage {
 
   // Google Tokens
   getGoogleToken(userId: string): Promise<GoogleToken | undefined>;
+  getGoogleTokens(): Promise<GoogleToken[]>;
   createGoogleToken(token: InsertGoogleToken): Promise<GoogleToken>;
   updateGoogleToken(userId: string, updates: Partial<InsertGoogleToken>): Promise<GoogleToken | undefined>;
   deleteGoogleToken(userId: string): Promise<boolean>;
@@ -581,6 +582,10 @@ export class DatabaseStorage implements IStorage {
   async getGoogleToken(userId: string): Promise<GoogleToken | undefined> {
     const [token] = await db.select().from(googleTokens).where(eq(googleTokens.userId, userId));
     return token || undefined;
+  }
+
+  async getGoogleTokens(): Promise<GoogleToken[]> {
+    return await db.select().from(googleTokens);
   }
 
   async createGoogleToken(insertToken: InsertGoogleToken): Promise<GoogleToken> {

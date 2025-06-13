@@ -4,11 +4,91 @@ import bcrypt from "bcrypt";
 import { createServer } from "http";
 import { storage } from "../storage";
 import { googleAuthService } from "../auth/google";
-import { insertBookingSchema, insertClientSchema, insertServiceSchema, insertBarberSchema, insertAdminUserSchema } from "../../shared/schema";
+import { insertBookingSchema, insertClientSchema, insertServiceSchema, insertBarberSchema, insertAdminUserSchema, type Booking } from "../../shared/schema";
 import connectPgSimple from "connect-pg-simple";
 
 export async function registerRoutes(app: Express) {
   const server = createServer(app);
+
+  // Helper function to create Google Calendar events
+  async function createCalendarEvent(booking: Booking) {
+    try {
+      // Get all Google tokens to find an active one
+      const allTokens = await storage.getGoogleTokens();
+      if (!allTokens || allTokens.length === 0) {
+        console.log('No Google tokens found, skipping calendar event creation');
+        return;
+      }
+      
+      // Use the first available token (in a real app, you'd associate tokens with specific users/barbers)
+      const googleToken = allTokens[0];
+      console.log(`Using Google token for user: ${googleToken.userId}`);
+
+      // Set credentials for the Google API client
+      googleAuthService.setCredentials(
+        googleToken.accessToken,
+        googleToken.refreshToken,
+        googleToken.expiryDate.getTime()
+      );
+
+      // Get barber and service details
+      const barber = await storage.getBarber(booking.barberId);
+      const service = await storage.getService(booking.serviceId);
+
+      if (!barber || !service) {
+        console.error('Missing barber or service data for calendar event');
+        return;
+      }
+
+      // Create calendar event
+      const calendar = googleAuthService.getCalendarClient();
+      
+      // Parse the booking time and create start/end times
+      const [hours, minutes] = booking.time.split(':').map(Number);
+      const startDate = new Date(booking.date);
+      startDate.setHours(hours, minutes, 0, 0);
+      
+      const endDate = new Date(startDate);
+      endDate.setMinutes(endDate.getMinutes() + service.duration);
+
+      const event = {
+        summary: `${service.name} - ${booking.customerName}`,
+        description: `Barbershop appointment\nBarber: ${barber.name}\nService: ${service.name}\nClient: ${booking.customerName}\nPhone: ${booking.customerPhone || 'N/A'}`,
+        start: {
+          dateTime: startDate.toISOString(),
+          timeZone: 'America/New_York', // Adjust timezone as needed
+        },
+        end: {
+          dateTime: endDate.toISOString(),
+          timeZone: 'America/New_York',
+        },
+        attendees: [
+          {
+            email: googleToken.userId, // The barber's email
+            displayName: barber.name,
+          },
+        ],
+        reminders: {
+          useDefault: false,
+          overrides: [
+            { method: 'email', minutes: 24 * 60 }, // 24 hours before
+            { method: 'popup', minutes: 30 }, // 30 minutes before
+          ],
+        },
+      };
+
+      const response = await calendar.events.insert({
+        calendarId: 'primary',
+        requestBody: event,
+      });
+
+      console.log('Calendar event created:', response.data.id);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating calendar event:', error);
+      throw error;
+    }
+  }
 
   // Session configuration
   const pgSession = connectPgSimple(session);
@@ -195,6 +275,15 @@ export async function registerRoutes(app: Express) {
     try {
       const booking = insertBookingSchema.parse(req.body);
       const newBooking = await storage.createBooking(booking);
+      
+      // Create Google Calendar event if user has connected their calendar
+      try {
+        await createCalendarEvent(newBooking);
+      } catch (calendarError) {
+        console.error("Error creating calendar event:", calendarError);
+        // Don't fail the booking if calendar creation fails
+      }
+      
       res.status(201).json(newBooking);
     } catch (error) {
       console.error("Error creating booking:", error);
