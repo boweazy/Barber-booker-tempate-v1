@@ -84,10 +84,7 @@ export class GoogleAuthService {
         REDIRECT_URI
       );
       
-      const { tokens } = await oauth2Client.getToken({
-        code: code,
-        // Don't include code_verifier or any PKCE parameters
-      });
+      const { tokens } = await oauth2Client.getToken(code);
       
       console.log('[OAuth] Token exchange response:', {
         has_access_token: !!tokens.access_token,

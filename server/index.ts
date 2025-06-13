@@ -56,7 +56,7 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Port configuration - use 5000 for Replit workflow compatibility, override environment PORT
+  // Port configuration - use port 5000 for workflow compatibility
   const port = 5000;
   
   server.listen(port, "0.0.0.0", () => {
