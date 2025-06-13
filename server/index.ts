@@ -56,16 +56,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Port configuration: prioritize environment PORT, fallback based on context
-  // In Replit dev environment PORT=3000, but deployment expects different handling
-  let port = 3000;
-  
-  if (process.env.PORT) {
-    port = parseInt(process.env.PORT, 10);
-  } else if (process.env.NODE_ENV === 'production') {
-    // Production deployment should use port from environment or 8080 (common for cloud deployments)
-    port = 8080;
-  }
+  // Port configuration for Replit compatibility
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
   
   server.listen({
     port,
