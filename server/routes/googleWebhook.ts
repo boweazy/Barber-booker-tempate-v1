@@ -4,8 +4,7 @@ import { db } from "../db";        // <-- change path if your prisma client live
 
 export async function upsertSyncTokenAndHandleEvents(
   calendar: calendar_v3.Calendar,
-  barber: { id: number; googleCalendarId: string; syncToken: string | null }
-) {
+f) {
   // Pull incremental changes
   const listRes = await calendar.events.list({
     calendarId:  barber.googleCalendarId,
