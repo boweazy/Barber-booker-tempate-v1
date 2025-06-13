@@ -8,7 +8,8 @@ import { CancellationPolicy } from "@/components/cancellation-policy";
 import { GoogleOAuthSetup } from "@/components/google-oauth-setup";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarPlus, Settings, HelpCircle, Gift, Bell, Shield, Star, Calendar } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { CalendarPlus, Settings, HelpCircle, Gift, Bell, Shield, Star, Calendar, Menu, X } from "lucide-react";
 
 export default function Home() {
   const [activeView, setActiveView] = useState<"booking" | "admin" | "features" | "oauth">("booking");
@@ -16,6 +17,8 @@ export default function Home() {
   const [showLoyalty, setShowLoyalty] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showPolicy, setShowPolicy] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Check if user has seen the tour before
@@ -54,16 +57,18 @@ export default function Home() {
       <header className="bg-white/90 backdrop-blur-sm shadow-lg border-b border-slate-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg">
-                <i className="fas fa-cut text-white text-xl"></i>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg">
+                <i className="fas fa-cut text-white text-sm sm:text-xl"></i>
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-800 to-indigo-700 bg-clip-text text-transparent">BarberShop Pro</h1>
-                <p className="text-sm text-slate-600 font-medium">Professional Booking System</p>
+                <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-800 to-indigo-700 bg-clip-text text-transparent">BarberShop Pro</h1>
+                <p className="text-xs sm:text-sm text-slate-600 font-medium hidden sm:block">Professional Booking System</p>
               </div>
             </div>
-            <nav className="flex items-center space-x-6">
+            
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-6">
               <Button
                 variant={activeView === "booking" ? "default" : "ghost"}
                 onClick={() => setActiveView("booking")}
@@ -107,7 +112,80 @@ export default function Home() {
                 <span>Help</span>
               </Button>
             </nav>
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
           </div>
+
+          {/* Mobile Navigation */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden py-4 border-t border-slate-200">
+              <nav className="flex flex-col space-y-2">
+                <Button
+                  variant={activeView === "booking" ? "default" : "ghost"}
+                  onClick={() => {
+                    setActiveView("booking");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="justify-start"
+                >
+                  <CalendarPlus className="w-4 h-4 mr-2" />
+                  Book Appointment
+                </Button>
+                <Button
+                  variant={activeView === "features" ? "default" : "ghost"}
+                  onClick={() => {
+                    setActiveView("features");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="justify-start"
+                >
+                  <Star className="w-4 h-4 mr-2" />
+                  Features
+                </Button>
+                <Button
+                  variant={activeView === "admin" ? "default" : "ghost"}
+                  onClick={() => {
+                    setActiveView("admin");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="justify-start"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Admin Panel
+                </Button>
+                <Button
+                  variant={activeView === "oauth" ? "default" : "ghost"}
+                  onClick={() => {
+                    setActiveView("oauth");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="justify-start"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Calendar Setup
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    startTour();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="justify-start"
+                >
+                  <HelpCircle className="w-4 h-4 mr-2" />
+                  Help
+                </Button>
+              </nav>
+            </div>
+          )}
         </div>
       </header>
 

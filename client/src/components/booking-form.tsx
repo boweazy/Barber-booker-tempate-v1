@@ -215,7 +215,7 @@ export function BookingForm() {
                   <User className="text-primary mr-2 w-4 h-4" />
                   Choose Your Barber
                 </Label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3">
                   {barbers.map((barber) => (
                     <div key={barber.id} className="relative">
                       <input
@@ -229,18 +229,18 @@ export function BookingForm() {
                       />
                       <label
                         htmlFor={`barber-${barber.id}`}
-                        className="flex items-center p-5 bg-gradient-to-r from-white to-slate-50 border-2 border-slate-200 rounded-xl cursor-pointer peer-checked:border-blue-500 peer-checked:bg-gradient-to-r peer-checked:from-blue-50 peer-checked:to-indigo-50 peer-checked:shadow-lg hover:border-blue-300 hover:shadow-md transition-all duration-200"
+                        className="flex items-center p-3 sm:p-5 bg-gradient-to-r from-white to-slate-50 border-2 border-slate-200 rounded-xl cursor-pointer peer-checked:border-blue-500 peer-checked:bg-gradient-to-r peer-checked:from-blue-50 peer-checked:to-indigo-50 peer-checked:shadow-lg hover:border-blue-300 hover:shadow-md transition-all duration-200"
                       >
-                        <div className="w-14 h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold mr-4 shadow-lg">
+                        <div className="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4 shadow-lg text-sm sm:text-base">
                           {barber.avatar}
                         </div>
-                        <div className="flex-1">
-                          <div className="font-semibold text-slate-900">{barber.name}</div>
-                          <div className="text-sm text-slate-500">{barber.title} • {barber.experience}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-slate-900 text-sm sm:text-base truncate">{barber.name}</div>
+                          <div className="text-xs sm:text-sm text-slate-500 truncate">{barber.title} • {barber.experience}</div>
                           <div className="flex items-center mt-1">
                             <div className="flex text-yellow-400 mr-2">
                               {[...Array(5)].map((_, i) => (
-                                <Star key={i} className="w-3 h-3 fill-current" />
+                                <Star key={i} className="w-2 h-2 sm:w-3 sm:h-3 fill-current" />
                               ))}
                             </div>
                             <span className="text-xs text-slate-500">{barber.rating}</span>
@@ -282,19 +282,19 @@ export function BookingForm() {
                     Available Time Slots
                   </Label>
                   {availableSlots.length > 0 ? (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                       {availableSlots.map((slot) => (
                         <button
                           key={slot}
                           type="button"
                           onClick={() => setSelectedTime(slot)}
-                          className={`p-3 text-center border-2 rounded-xl cursor-pointer transition-all duration-200 ${
+                          className={`p-2 sm:p-3 text-center border-2 rounded-xl cursor-pointer transition-all duration-200 ${
                             selectedTime === slot
                               ? "border-blue-500 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg transform scale-105"
                               : "border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50 hover:shadow-md"
                           }`}
                         >
-                          <span className="font-semibold">{formatTime(slot)}</span>
+                          <span className="font-semibold text-xs sm:text-sm">{formatTime(slot)}</span>
                         </button>
                       ))}
                     </div>
