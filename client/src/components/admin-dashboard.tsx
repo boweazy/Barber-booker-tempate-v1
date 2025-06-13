@@ -227,6 +227,42 @@ export function AdminDashboard() {
         </Card>
       </div>
 
+      {/* Google Calendar Integration */}
+      <Card className="shadow-xl border-0 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+        <CardHeader className="border-b border-green-200 bg-gradient-to-r from-green-100 to-emerald-100 rounded-t-lg">
+          <CardTitle className="text-xl text-green-800 flex items-center">
+            <Calendar className="w-6 h-6 mr-3 text-green-600" />
+            Google Calendar Integration
+          </CardTitle>
+          <p className="text-green-700 text-sm">Connect your Google Calendar to automatically sync bookings</p>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-green-800">Calendar Sync Status</h3>
+                <p className="text-sm text-green-600">Sync bookings to your Google Calendar automatically</p>
+              </div>
+              <Button 
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => window.open('/auth/google', '_blank')}
+              >
+                Connect Google Calendar
+              </Button>
+            </div>
+            <div className="bg-green-100 border border-green-200 rounded-lg p-4">
+              <h4 className="font-medium text-green-800 mb-2">Benefits of Calendar Integration:</h4>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>• Automatic booking synchronization</li>
+                <li>• Real-time calendar updates</li>
+                <li>• Prevent double bookings</li>
+                <li>• Mobile calendar access</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Bookings Table */}
       <Card className="shadow-xl border-0 bg-slate-800/95 backdrop-blur-sm">
         <CardHeader className="border-b border-slate-600/50 bg-gradient-to-r from-slate-700 to-slate-600 rounded-t-lg">
