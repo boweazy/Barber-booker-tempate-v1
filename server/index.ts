@@ -56,8 +56,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Port configuration - use environment PORT or fallback based on NODE_ENV
-  const port = process.env.PORT ? parseInt(process.env.PORT) : (process.env.NODE_ENV === "production" ? 3000 : 5000);
+  // Port configuration - use environment PORT or fallback to 5000 for development
+  const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
   
   server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);

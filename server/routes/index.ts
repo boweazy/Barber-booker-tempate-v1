@@ -233,6 +233,36 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Availability - Get available time slots for a barber on a specific date
+  app.get("/api/availability", async (req, res) => {
+    try {
+      const { barberId, date } = req.query;
+      
+      if (!barberId || !date) {
+        return res.status(400).json({ error: "barberId and date are required" });
+      }
+
+      // All possible time slots
+      const allSlots = [
+        "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+        "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+        "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"
+      ];
+
+      // Get existing bookings for the date and barber
+      const bookings = await storage.getBookingsByBarberAndDate(parseInt(barberId as string), date as string);
+      const bookedSlots = bookings.map(booking => booking.time);
+
+      // Filter out booked slots
+      const availableSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
+
+      res.json(availableSlots);
+    } catch (error) {
+      console.error("Error fetching availability:", error);
+      res.status(500).json({ error: "Failed to fetch availability" });
+    }
+  });
+
   // Clients
   app.get("/api/clients", async (_req, res) => {
     try {
