@@ -19,7 +19,7 @@ export async function registerRoutes(app: Express) {
         console.log('No Google tokens found, skipping calendar event creation');
         return;
       }
-      
+
       // Use the first available token (in a real app, you'd associate tokens with specific users/barbers)
       const googleToken = allTokens[0];
       console.log(`Using Google token for user: ${googleToken.userId}`);
@@ -42,12 +42,12 @@ export async function registerRoutes(app: Express) {
 
       // Create calendar event
       const calendar = googleAuthService.getCalendarClient();
-      
+
       // Parse the booking time and create start/end times
       const [hours, minutes] = booking.time.split(':').map(Number);
       const startDate = new Date(booking.date);
       startDate.setHours(hours, minutes, 0, 0);
-      
+
       const endDate = new Date(startDate);
       endDate.setMinutes(endDate.getMinutes() + service.duration);
 
@@ -119,7 +119,7 @@ export async function registerRoutes(app: Express) {
   app.post("/api/admin/login", async (req, res) => {
     try {
       const { username, password } = req.body;
-      
+
       const user = await storage.getAdminUserByUsername(username);
       if (!user || !user.isActive) {
         return res.status(401).json({ error: "Invalid credentials" });
@@ -134,7 +134,7 @@ export async function registerRoutes(app: Express) {
 
       // Store user in session
       req.session.adminUser = user;
-      
+
       res.json({ success: true, user: { id: user.id, username: user.username, role: user.role } });
     } catch (error) {
       console.error("Login error:", error);
@@ -271,23 +271,19 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // POST /api/bookings - Create a new booking
   app.post("/api/bookings", async (req, res) => {
     try {
-      const booking = insertBookingSchema.parse(req.body);
-      const newBooking = await storage.createBooking(booking);
-      
-      // Create Google Calendar event if user has connected their calendar
-      try {
-        await createCalendarEvent(newBooking);
-      } catch (calendarError) {
-        console.error("Error creating calendar event:", calendarError);
-        // Don't fail the booking if calendar creation fails
-      }
-      
-      res.status(201).json(newBooking);
+      const bookingData = insertBookingSchema.parse(req.body);
+      const booking = await storage.createBooking(bookingData);
+
+      // Create Google Calendar event after successful booking creation
+      await createCalendarEvent(booking);
+
+      res.json(booking);
     } catch (error) {
       console.error("Error creating booking:", error);
-      res.status(500).json({ error: "Failed to create booking" });
+      res.status(400).json({ error: "Failed to create booking" });
     }
   });
 
@@ -295,7 +291,7 @@ export async function registerRoutes(app: Express) {
     try {
       const id = parseInt(req.params.id);
       const updates = req.body;
-      
+
       const booking = await storage.updateBooking(id, updates);
       if (!booking) {
         return res.status(404).json({ error: "Booking not found" });
@@ -311,7 +307,7 @@ export async function registerRoutes(app: Express) {
     try {
       const id = parseInt(req.params.id);
       const success = await storage.deleteBooking(id);
-      
+
       if (!success) {
         return res.status(404).json({ error: "Booking not found" });
       }
@@ -326,7 +322,7 @@ export async function registerRoutes(app: Express) {
   app.get("/api/availability", async (req, res) => {
     try {
       const { barberId, date } = req.query;
-      
+
       if (!barberId || !date) {
         return res.status(400).json({ error: "barberId and date are required" });
       }
@@ -378,7 +374,7 @@ export async function registerRoutes(app: Express) {
     try {
       const id = parseInt(req.params.id);
       const updates = req.body;
-      
+
       const client = await storage.updateClient(id, updates);
       if (!client) {
         return res.status(404).json({ error: "Client not found" });
@@ -410,10 +406,10 @@ export async function registerRoutes(app: Express) {
     try {
       const userId = req.query.userId as string || "admin"; // Default user for testing
       console.log(`[OAuth] Initiating Google OAuth for user: ${userId}`);
-      
+
       const authUrl = googleAuthService.getAuthUrl(userId);
       console.log(`[OAuth] Generated auth URL: ${authUrl}`);
-      
+
       res.redirect(authUrl);
     } catch (error) {
       console.error("[OAuth] Error initiating Google auth:", error);
@@ -471,7 +467,7 @@ export async function registerRoutes(app: Express) {
         tokens.refresh_token, 
         tokens.expiry_date
       );
-      
+
       const calendarAccessTest = await googleAuthService.testCalendarAccess();
       console.log(`[OAuth] Calendar access test: ${calendarAccessTest ? 'SUCCESS' : 'FAILED'}`);
 
@@ -490,7 +486,7 @@ export async function registerRoutes(app: Express) {
   app.get("/auth/google/test/:userId", async (req, res) => {
     try {
       const { userId } = req.params;
-      
+
       const token = await storage.getGoogleToken(userId);
       if (!token) {
         return res.status(404).json({ error: "No token found for user" });
@@ -502,9 +498,9 @@ export async function registerRoutes(app: Express) {
         token.refreshToken, 
         token.expiryDate.getTime()
       );
-      
+
       const calendarAccess = await googleAuthService.testCalendarAccess();
-      
+
       res.json({
         success: true,
         tokenId: token.id,
