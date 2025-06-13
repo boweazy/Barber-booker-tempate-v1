@@ -62,12 +62,8 @@ export async function registerRoutes(app: Express) {
           dateTime: endDate.toISOString(),
           timeZone: 'America/New_York',
         },
-        attendees: [
-          {
-            email: googleToken.userId, // The barber's email
-            displayName: barber.name,
-          },
-        ],
+        // Remove attendees to avoid email validation issues
+        // attendees: [],
         reminders: {
           useDefault: false,
           overrides: [
