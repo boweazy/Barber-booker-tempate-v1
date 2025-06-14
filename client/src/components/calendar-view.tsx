@@ -219,7 +219,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
                 className={`
                   p-1 sm:p-3 min-h-16 sm:min-h-32 border border-border rounded-lg cursor-pointer transition-all duration-200 overflow-hidden
                   ${isSelectedDate 
-                    ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-blue-500 shadow-lg' 
+                    ? 'bg-gradient-to-br from-slate-400 to-slate-500 text-white border-slate-400 shadow-lg' 
                     : pastDate
                     ? 'bg-muted/50 text-muted-foreground cursor-not-allowed'
                     : todayClass
@@ -242,7 +242,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
                       className={`text-xs px-1 sm:px-2 py-1 rounded-md truncate ${
                         isSelectedDate 
                           ? 'bg-white/20 text-white' 
-                          : 'bg-blue-600 text-white'
+                          : 'bg-slate-500 text-white'
                       }`}
                       title={`${formatTime(booking.time)} - ${booking.customerName} (${getServiceName(booking.serviceId)})`}
                     >
@@ -277,7 +277,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
                           className={`text-xs w-full h-8 px-2 py-1 font-medium ${
                             isSelectedDate 
                               ? 'bg-white/20 text-white border-white/30 hover:bg-white/30' 
-                              : 'bg-green-600 text-white border-green-600 hover:bg-green-700 hover:border-green-700'
+                              : 'bg-slate-400 text-white border-slate-400 hover:bg-slate-500 hover:border-slate-500'
                           }`}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -293,7 +293,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
                         <div className={`text-xs p-1 rounded text-center ${
                           isSelectedDate 
                             ? 'bg-white/20 text-white' 
-                            : 'bg-green-100 text-green-600'
+                            : 'bg-slate-100 text-slate-600'
                         }`}>
                           Available
                         </div>
@@ -323,7 +323,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
             <span className="text-slate-600">Today</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-green-100 rounded"></div>
+            <div className="w-3 h-3 bg-slate-100 rounded"></div>
             <span className="text-slate-600">Available</span>
           </div>
           <div className="flex items-center space-x-2">
@@ -331,7 +331,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
             <span className="text-slate-600">Has Bookings</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded"></div>
+            <div className="w-3 h-3 bg-gradient-to-br from-slate-400 to-slate-500 rounded"></div>
             <span className="text-slate-600">Selected</span>
           </div>
         </div>
