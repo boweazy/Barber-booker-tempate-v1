@@ -164,7 +164,7 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
   };
 
   const formatPrice = (priceInCents: number) => {
-    return `$${(priceInCents / 100).toFixed(2)}`;
+    return `£${(priceInCents / 100).toFixed(2)}`;
   };
 
   const openWhatsApp = () => {
@@ -218,7 +218,7 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
             
             <CardHeader className="bg-gradient-to-r from-slate-700 to-slate-600 border-b border-slate-600/50 rounded-t-lg relative">
               <CardTitle className="text-lg sm:text-2xl text-white flex items-center">
-                <CalendarCheck className="text-blue-400 mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6" />
+                <CalendarCheck className="text-red-400 mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6" />
                 Book Your Appointment
                 <span className="ml-3 text-lg">💈</span>
               </CardTitle>

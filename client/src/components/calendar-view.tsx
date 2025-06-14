@@ -225,7 +225,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
                     : todayClass
                     ? 'bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600 hover:bg-gradient-to-br hover:from-gray-600 hover:to-gray-700 text-white'
                     : dayBookings.length > 0
-                    ? 'bg-gradient-to-br from-red-200 to-red-200 border-red-300 hover:bg-gradient-to-br hover:from-red-300 hover:to-red-300 text-foreground'
+                    ? 'bg-gradient-to-br from-red-500 to-red-600 border-red-500 hover:bg-gradient-to-br hover:from-red-600 hover:to-red-700 text-white'
                     : 'bg-muted hover:bg-secondary hover:border-primary/50 text-card-foreground'
                   }
                 `}
@@ -257,7 +257,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
                     <div className={`text-xs px-2 py-1 rounded-md text-center font-medium ${
                       isSelectedDate 
                         ? 'bg-white/20 text-white' 
-                        : 'bg-orange-600 text-white'
+                        : 'bg-red-600 text-white'
                     }`}>
                       +{dayBookings.length - 2} more bookings
                     </div>
@@ -327,7 +327,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
             <span className="text-slate-600">Available</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-gradient-to-br from-red-50 to-red-50 border border-red-200 rounded"></div>
+            <div className="w-3 h-3 bg-gradient-to-br from-red-500 to-red-600 rounded"></div>
             <span className="text-slate-600">Has Bookings</span>
           </div>
           <div className="flex items-center space-x-2">
