@@ -163,17 +163,21 @@ export default function Home() {
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <div className="lg:hidden py-4 border-t border-slate-200">
-              <nav className="flex flex-col space-y-2">
+            <div className="lg:hidden py-6 border-t border-slate-200 bg-gradient-to-b from-white to-slate-50">
+              <nav className="flex flex-col space-y-3">
                 <Button
                   variant={activeView === "booking" ? "default" : "ghost"}
                   onClick={() => {
                     setActiveView("booking");
                     setMobileMenuOpen(false);
                   }}
-                  className="justify-start"
+                  className={`justify-start px-4 py-3 transition-all duration-300 ${
+                    activeView === "booking" 
+                      ? "bg-teal-500 text-white" 
+                      : "hover:bg-teal-50 hover:text-teal-700"
+                  }`}
                 >
-                  <CalendarPlus className="w-4 h-4 mr-2" />
+                  <CalendarPlus className="w-4 h-4 mr-3" />
                   Book Appointment
                 </Button>
                 <Button
@@ -182,9 +186,13 @@ export default function Home() {
                     setActiveView("features");
                     setMobileMenuOpen(false);
                   }}
-                  className="justify-start"
+                  className={`justify-start px-4 py-3 transition-all duration-300 ${
+                    activeView === "features" 
+                      ? "bg-teal-500 text-white" 
+                      : "hover:bg-teal-50 hover:text-teal-700"
+                  }`}
                 >
-                  <Star className="w-4 h-4 mr-2" />
+                  <Star className="w-4 h-4 mr-3" />
                   Features
                 </Button>
                 <Button
@@ -193,9 +201,13 @@ export default function Home() {
                     setActiveView("admin");
                     setMobileMenuOpen(false);
                   }}
-                  className="justify-start"
+                  className={`justify-start px-4 py-3 transition-all duration-300 ${
+                    activeView === "admin" 
+                      ? "bg-teal-500 text-white" 
+                      : "hover:bg-teal-50 hover:text-teal-700"
+                  }`}
                 >
-                  <Settings className="w-4 h-4 mr-2" />
+                  <Settings className="w-4 h-4 mr-3" />
                   Admin Panel
                 </Button>
                 <Button
@@ -204,9 +216,13 @@ export default function Home() {
                     setActiveView("oauth");
                     setMobileMenuOpen(false);
                   }}
-                  className="justify-start"
+                  className={`justify-start px-4 py-3 transition-all duration-300 ${
+                    activeView === "oauth" 
+                      ? "bg-teal-500 text-white" 
+                      : "hover:bg-teal-50 hover:text-teal-700"
+                  }`}
                 >
-                  <Calendar className="w-4 h-4 mr-2" />
+                  <Calendar className="w-4 h-4 mr-3" />
                   Calendar Setup
                 </Button>
                 <Button
@@ -215,9 +231,9 @@ export default function Home() {
                     startTour();
                     setMobileMenuOpen(false);
                   }}
-                  className="justify-start"
+                  className="justify-start px-4 py-3 hover:bg-slate-100 transition-all duration-300"
                 >
-                  <HelpCircle className="w-4 h-4 mr-2" />
+                  <HelpCircle className="w-4 h-4 mr-3" />
                   Help
                 </Button>
               </nav>

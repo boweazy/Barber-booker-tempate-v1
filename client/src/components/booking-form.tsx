@@ -347,8 +347,8 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
               {/* Customer Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-tour="customer-info">
                 <div className="space-y-2">
-                  <Label htmlFor="customerName" className="text-sm font-semibold text-slate-700 flex items-center">
-                    <User className="text-primary mr-2 w-4 h-4" />
+                  <Label htmlFor="customerName" className="text-lg font-semibold text-slate-800 flex items-center">
+                    <User className="text-teal-600 mr-3 w-5 h-5" />
                     Your Name
                   </Label>
                   <Input
@@ -362,8 +362,8 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="customerPhone" className="text-sm font-semibold text-slate-700 flex items-center">
-                    <Phone className="text-primary mr-2 w-4 h-4" />
+                  <Label htmlFor="customerPhone" className="text-lg font-semibold text-slate-800 flex items-center">
+                    <Phone className="text-teal-600 mr-3 w-5 h-5" />
                     Phone Number
                   </Label>
                   <Input
@@ -397,8 +397,8 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
 
               {/* Service Selection */}
               <div className="space-y-3" data-tour="service-selection">
-                <Label className="text-sm font-semibold text-slate-700 flex items-center">
-                  <i className="fas fa-scissors text-primary mr-2"></i>
+                <Label className="text-lg font-semibold text-slate-800 flex items-center">
+                  <i className="fas fa-scissors text-teal-600 mr-3"></i>
                   Select Service
                 </Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -415,13 +415,13 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
                       />
                       <label
                         htmlFor={`service-${service.id}`}
-                        className="flex items-center justify-between p-4 bg-gradient-to-r from-white to-slate-50 border-2 border-slate-200 rounded-xl cursor-pointer peer-checked:border-red-400 peer-checked:bg-gradient-to-r peer-checked:from-red-50 peer-checked:to-red-100 peer-checked:shadow-lg hover:border-red-200 hover:shadow-md transition-all duration-200"
+                        className="flex items-center justify-between p-4 bg-gradient-to-r from-white to-slate-50 border-2 border-slate-200 rounded-xl cursor-pointer peer-checked:border-teal-500 peer-checked:bg-gradient-to-r peer-checked:from-teal-50 peer-checked:to-teal-100 peer-checked:shadow-lg hover:border-teal-300 hover:shadow-md transition-all duration-300"
                       >
                         <div>
                           <div className="font-medium text-slate-900">{service.name}</div>
                           <div className="text-sm text-slate-500">{service.duration} min</div>
                         </div>
-                        <div className="text-lg font-bold text-red-400">{formatPrice(service.price)}</div>
+                        <div className="text-lg font-bold text-teal-600">{formatPrice(service.price)}</div>
                       </label>
                     </div>
                   ))}
@@ -432,21 +432,21 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
               </div>
 
               {/* Submit Button */}
-              <div className="pt-4">
+              <div className="pt-6">
                 <Button
                   type="submit"
                   disabled={createBookingMutation.isPending}
-                  className="w-full py-4 text-lg font-semibold"
+                  className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   {createBookingMutation.isPending ? (
                     <>
-                      <i className="fas fa-spinner fa-spin mr-2"></i>
-                      Booking...
+                      <i className="fas fa-spinner fa-spin mr-3"></i>
+                      Booking Your Appointment...
                     </>
                   ) : (
                     <>
-                      <CalendarCheck className="mr-2" />
-                      Book Appointment
+                      <CalendarCheck className="mr-3 w-5 h-5" />
+                      Book Your Appointment
                     </>
                   )}
                 </Button>
