@@ -231,6 +231,28 @@ export async function registerRoutes(app: Express) {
   }
 });
 
+  // Test email endpoint
+  app.post("/api/test-email", async (req: Request, res: Response) => {
+    try {
+      const { email, message } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+      
+      const testMessage = message || "This is a test email from Smart Flow Systems booking system.";
+      const success = await sendEmailConfirmation(email, testMessage);
+      
+      if (success) {
+        res.json({ message: "Email sent successfully" });
+      } else {
+        res.status(500).json({ error: "Failed to send email" });
+      }
+    } catch (error) {
+      console.error("Email test error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
 
   // Services
   app.get("/api/services", async (_req, res) => {

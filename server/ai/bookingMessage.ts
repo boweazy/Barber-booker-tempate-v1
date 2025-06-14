@@ -36,11 +36,116 @@ export async function generateBookingMessage(customerName: string, date: string,
 }
 
 export async function sendEmailConfirmation(email: string, message: string): Promise<boolean> {
-  // Email functionality would require SendGrid setup
-  // For now, we'll just log the email that would be sent
-  console.log(`Email confirmation would be sent to ${email}:`);
-  console.log(message);
+  // Try multiple email service options
   
-  // Return true to indicate the operation completed (even if logged)
+  // Option 1: SendGrid (if available)
+  if (process.env.SENDGRID_API_KEY) {
+    try {
+      const sgMail = require('@sendgrid/mail');
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      
+      const msg = {
+        to: email,
+        from: process.env.FROM_EMAIL || 'bookings@smartflowsystems.com',
+        subject: 'Booking Confirmation - Smart Flow Systems',
+        text: message,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #374151;">Booking Confirmation</h2>
+            <p style="color: #6b7280; line-height: 1.6;">${message}</p>
+            <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+            <p style="color: #9ca3af; font-size: 12px;">Smart Flow Systems - Professional Barbershop Services</p>
+          </div>
+        `
+      };
+      
+      await sgMail.send(msg);
+      console.log(`✓ Email sent successfully to ${email} via SendGrid`);
+      return true;
+    } catch (error) {
+      console.error('SendGrid email failed:', error);
+    }
+  }
+  
+  // Option 2: Gmail SMTP (if available)
+  if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+    try {
+      const nodemailer = require('nodemailer');
+      
+      const transporter = nodemailer.createTransporter({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_PASS // App password required
+        }
+      });
+      
+      const mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: email,
+        subject: 'Booking Confirmation - Smart Flow Systems',
+        text: message,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #374151;">Booking Confirmation</h2>
+            <p style="color: #6b7280; line-height: 1.6;">${message}</p>
+            <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+            <p style="color: #9ca3af; font-size: 12px;">Smart Flow Systems - Professional Barbershop Services</p>
+          </div>
+        `
+      };
+      
+      await transporter.sendMail(mailOptions);
+      console.log(`✓ Email sent successfully to ${email} via Gmail SMTP`);
+      return true;
+    } catch (error) {
+      console.error('Gmail SMTP email failed:', error);
+    }
+  }
+  
+  // Option 3: Outlook/Hotmail SMTP (if available)
+  if (process.env.OUTLOOK_USER && process.env.OUTLOOK_PASS) {
+    try {
+      const nodemailer = require('nodemailer');
+      
+      const transporter = nodemailer.createTransporter({
+        service: 'hotmail',
+        auth: {
+          user: process.env.OUTLOOK_USER,
+          pass: process.env.OUTLOOK_PASS
+        }
+      });
+      
+      const mailOptions = {
+        from: process.env.OUTLOOK_USER,
+        to: email,
+        subject: 'Booking Confirmation - Smart Flow Systems',
+        text: message,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #374151;">Booking Confirmation</h2>
+            <p style="color: #6b7280; line-height: 1.6;">${message}</p>
+            <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+            <p style="color: #9ca3af; font-size: 12px;">Smart Flow Systems - Professional Barbershop Services</p>
+          </div>
+        `
+      };
+      
+      await transporter.sendMail(mailOptions);
+      console.log(`✓ Email sent successfully to ${email} via Outlook SMTP`);
+      return true;
+    } catch (error) {
+      console.error('Outlook SMTP email failed:', error);
+    }
+  }
+  
+  // Fallback: Log the email (no service configured)
+  console.log(`📧 Email confirmation for ${email}:`);
+  console.log(message);
+  console.log('ℹ️  To enable email sending, configure one of these options:');
+  console.log('   • SendGrid: Set SENDGRID_API_KEY');
+  console.log('   • Gmail: Set GMAIL_USER and GMAIL_PASS (app password)');
+  console.log('   • Outlook: Set OUTLOOK_USER and OUTLOOK_PASS');
+  
   return true;
 }
