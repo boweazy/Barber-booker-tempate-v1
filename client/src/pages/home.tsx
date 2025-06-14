@@ -55,7 +55,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-transparent">
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-sm shadow-lg border-b border-slate-200/50 relative overflow-hidden">
+      <header className="bg-gradient-to-r from-white/95 via-slate-50/90 to-white/95 backdrop-blur-sm shadow-lg border-b border-slate-200/50 relative overflow-hidden transition-all duration-500">
         {/* Decorative barber elements */}
         <div className="absolute top-0 left-0 w-full h-full opacity-5">
           <div className="absolute top-2 left-20 text-4xl">✂️</div>
@@ -89,7 +89,7 @@ export default function Home() {
               <Button
                 variant={activeView === "booking" ? "default" : "ghost"}
                 onClick={() => setActiveView("booking")}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 bg-gradient-to-r from-transparent via-slate-50/20 to-transparent hover:from-red-50 hover:via-red-100/50 hover:to-red-50 transition-all duration-300"
               >
                 <CalendarPlus className="w-4 h-4" />
                 <span>Book Appointment</span>
@@ -97,7 +97,7 @@ export default function Home() {
               <Button
                 variant={activeView === "features" ? "default" : "ghost"}
                 onClick={() => setActiveView("features")}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 bg-gradient-to-r from-transparent via-slate-50/20 to-transparent hover:from-slate-50 hover:via-slate-100/50 hover:to-slate-50 transition-all duration-300"
               >
                 <Star className="w-4 h-4" />
                 <span>Features</span>
@@ -105,7 +105,7 @@ export default function Home() {
               <Button
                 variant={activeView === "admin" ? "default" : "ghost"}
                 onClick={() => setActiveView("admin")}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 bg-gradient-to-r from-transparent via-slate-50/20 to-transparent hover:from-slate-50 hover:via-slate-100/50 hover:to-slate-50 transition-all duration-300"
                 data-tour="admin-button"
               >
                 <Settings className="w-4 h-4" />
@@ -114,7 +114,7 @@ export default function Home() {
               <Button
                 variant={activeView === "oauth" ? "default" : "ghost"}
                 onClick={() => setActiveView("oauth")}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 bg-gradient-to-r from-transparent via-slate-50/20 to-transparent hover:from-slate-50 hover:via-slate-100/50 hover:to-slate-50 transition-all duration-300"
               >
                 <Calendar className="w-4 h-4" />
                 <span>Calendar Setup</span>
@@ -122,7 +122,7 @@ export default function Home() {
               <Button
                 variant="ghost"
                 onClick={startTour}
-                className="flex items-center space-x-2 text-slate-600 hover:text-slate-900"
+                className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 bg-gradient-to-r from-transparent via-slate-50/20 to-transparent hover:from-slate-50 hover:via-slate-100/50 hover:to-slate-50 transition-all duration-300"
                 title="Take a quick tour"
               >
                 <HelpCircle className="w-4 h-4" />

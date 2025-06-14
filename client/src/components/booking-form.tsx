@@ -211,7 +211,7 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Booking Form */}
         <div className="lg:col-span-2 w-full max-w-full" data-booking-form>
-          <Card className="shadow-xl border-0 bg-slate-800/95 backdrop-blur-sm w-full overflow-hidden relative">
+          <Card className="shadow-xl border-0 bg-gradient-to-br from-slate-800/95 via-slate-700/90 to-slate-800/95 backdrop-blur-sm w-full overflow-hidden relative transition-all duration-500 hover:shadow-2xl">
             {/* Decorative barber elements in form header */}
             <div className="absolute top-2 right-4 text-2xl opacity-20">✂️</div>
             <div className="absolute top-4 right-12 text-xl opacity-15">💈</div>
@@ -448,7 +448,7 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
                 <Button
                   type="button"
                   onClick={openWhatsApp}
-                  className="w-full py-4 text-lg font-semibold bg-green-500 hover:bg-green-600 text-white border-0"
+                  className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-green-500 via-green-400 to-green-500 hover:from-green-600 hover:via-green-500 hover:to-green-600 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl"
                   variant="outline"
                 >
                   <MessageCircle className="mr-2" />
