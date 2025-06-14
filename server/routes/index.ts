@@ -1,3 +1,4 @@
+import { generateBookingMessage, sendEmailConfirmation } from "../ai/bookingMessage";
 import express, { type Express } from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
@@ -201,16 +202,35 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  app.post("/api/barbers", async (req, res) => {
-    try {
-      const barber = insertBarberSchema.parse(req.body);
-      const newBarber = await storage.createBarber(barber);
-      res.status(201).json(newBarber);
-    } catch (error) {
-      console.error("Error creating barber:", error);
-      res.status(500).json({ error: "Failed to create barber" });
+  app.post("/api/bookings", async (req, res) => {
+  try {
+    // ✅ Step 1: Validate and store booking
+    const bookingData = insertBookingSchema.parse(req.body);
+    const booking = await storage.createBooking(bookingData);
+
+    // ✅ Step 2: Add Google Calendar event
+    await createCalendarEvent(booking);
+
+    // ✅ Step 3: Generate AI message
+    const message = await generateBookingMessage(
+      booking.customerName,
+      booking.date,
+      booking.time
+    );
+
+    // ✅ Step 4: Send email if email is provided
+    if (booking.customerEmail) {
+      await sendEmailConfirmation(booking.customerEmail, message);
     }
-  });
+
+    // ✅ Step 5: Return booking info + AI message
+    res.json({ ...booking, aiMessage: message });
+  } catch (error) {
+    console.error("Error creating booking:", error);
+    res.status(400).json({ error: "Failed to create booking" });
+  }
+});
+
 
   // Services
   app.get("/api/services", async (_req, res) => {
@@ -269,6 +289,27 @@ export async function registerRoutes(app: Express) {
 
   // POST /api/bookings - Create a new booking
   app.post("/api/bookings", async (req, res) => {
+  try {
+    const bookingData = insertBookingSchema.parse(req.body);
+    const booking = await storage.createBooking(bookingData);
+
+    const message = await generateBookingMessage(
+      booking.customerName,
+      booking.date,
+      booking.time
+    );
+
+    if (booking.customerEmail) {
+      await sendEmailConfirmation(booking.customerEmail, message);
+    }
+
+    res.json({ ...booking, aiMessage: message });
+  } catch (error) {
+    console.error("Error creating booking:", error);
+    res.status(400).json({ error: "Failed to create booking" });
+  }
+});
+.post("/api/bookings", async (req, res) => {
     try {
       const bookingData = insertBookingSchema.parse(req.body);
       const booking = await storage.createBooking(bookingData);
