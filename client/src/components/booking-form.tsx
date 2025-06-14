@@ -313,7 +313,7 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
                           className={`p-2 sm:p-3 text-center border-2 rounded-xl cursor-pointer transition-all duration-200 ${
                             selectedTime === slot
                               ? "border-red-400 bg-gradient-to-r from-red-300 to-red-400 text-white shadow-lg transform scale-105"
-                              : "border-slate-200 bg-white hover:border-red-200 hover:bg-red-25 hover:shadow-md"
+                              : "border-slate-200 bg-white hover:border-red-200 hover:bg-red-50 hover:shadow-md"
                           }`}
                         >
                           <span className="font-semibold text-xs sm:text-sm">{formatTime(slot)}</span>
