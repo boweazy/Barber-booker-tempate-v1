@@ -52,10 +52,10 @@ export function BarberProfile({ barber, onSelect, isSelected, showFullProfile = 
 
   if (showFullProfile) {
     return (
-      <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm overflow-hidden">
+      <Card className="shadow-xl border-0 bg-gradient-to-br from-white/95 via-slate-50/90 to-white/95 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:shadow-2xl">
         <div className="relative">
           {/* Profile Header with Photo */}
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6">
+          <div className="bg-gradient-to-br from-slate-600 via-slate-500 to-slate-600 p-6 transition-all duration-300">
             <div className="flex items-start space-x-6">
               <div className="relative">
                 <img
@@ -161,10 +161,10 @@ export function BarberProfile({ barber, onSelect, isSelected, showFullProfile = 
   // Compact profile for selection
   return (
     <Card 
-      className={`cursor-pointer transition-all duration-200 shadow-lg border-0 bg-white/95 backdrop-blur-sm hover:shadow-xl ${
+      className={`cursor-pointer transition-all duration-300 shadow-lg border-0 bg-gradient-to-br from-white/95 via-slate-50/90 to-white/95 backdrop-blur-sm hover:shadow-xl ${
         isSelected 
-          ? 'ring-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50' 
-          : 'hover:bg-gradient-to-br hover:from-blue-50/50 hover:to-indigo-50/50'
+          ? 'ring-2 ring-slate-400 bg-gradient-to-br from-slate-50 to-slate-100 shadow-xl' 
+          : 'hover:bg-gradient-to-br hover:from-slate-50/50 hover:via-slate-100/30 hover:to-slate-50/50'
       }`}
       onClick={onSelect}
     >

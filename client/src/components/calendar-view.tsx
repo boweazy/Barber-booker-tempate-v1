@@ -152,8 +152,8 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <Card className="shadow-xl border-0 bg-card backdrop-blur-sm w-full max-w-full overflow-hidden">
-      <CardHeader className="bg-muted border-b border-border rounded-t-lg">
+    <Card className="shadow-xl border-0 bg-gradient-to-br from-white/95 via-slate-50/90 to-white/95 backdrop-blur-sm w-full max-w-full overflow-hidden transition-all duration-500 hover:shadow-2xl">
+      <CardHeader className="bg-gradient-to-r from-slate-50 via-slate-100/50 to-slate-50 border-b border-slate-200/50 rounded-t-lg transition-all duration-300">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <CardTitle className="text-lg sm:text-xl text-card-foreground flex items-center">
             <Calendar className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
@@ -164,7 +164,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
               variant="ghost" 
               size="sm" 
               onClick={() => navigateMonth(-1)}
-              className="hover:bg-accent text-card-foreground h-8 w-8 p-0"
+              className="hover:bg-gradient-to-r hover:from-slate-100 hover:via-slate-50 hover:to-slate-100 text-card-foreground h-8 w-8 p-0 transition-all duration-300"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
@@ -175,7 +175,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
               variant="ghost" 
               size="sm" 
               onClick={() => navigateMonth(1)}
-              className="hover:bg-accent text-card-foreground h-8 w-8 p-0"
+              className="hover:bg-gradient-to-r hover:from-slate-100 hover:via-slate-50 hover:to-slate-100 text-card-foreground h-8 w-8 p-0 transition-all duration-300"
             >
               <ChevronRight className="w-4 h-4" />
             </Button>

@@ -462,8 +462,8 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
 
       {/* Booking Summary */}
       <div className="space-y-6" data-tour="booking-summary">
-        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
-          <CardHeader className="bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-indigo-100/50 rounded-t-lg">
+        <Card className="shadow-xl border-0 bg-gradient-to-br from-white/95 via-slate-50/90 to-white/95 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl">
+          <CardHeader className="bg-gradient-to-r from-slate-50 via-slate-100/50 to-slate-50 border-b border-slate-200/50 rounded-t-lg transition-all duration-300">
             <CardTitle className="text-lg text-slate-900 flex items-center">
               <i className="fas fa-clipboard-list text-indigo-600 mr-2"></i>
               Booking Summary
