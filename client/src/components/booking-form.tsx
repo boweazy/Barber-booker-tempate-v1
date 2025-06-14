@@ -180,10 +180,15 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
     form.setValue("date", date);
   };
 
-  const handleQuickBook = (date: string, barberId?: number) => {
+  const handleQuickBook = (date: string, time?: string, barberId?: number) => {
     // Auto-fill form with calendar selection
     form.setValue("date", date);
     setSelectedDate(date);
+
+    if (time) {
+      form.setValue("time", time);
+      setSelectedTime(time);
+    }
 
     if (barberId) {
       setSelectedBarber(barberId);
@@ -199,6 +204,19 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
     }, 100);
   };
 
+  const handleTimeSelect = (time: string) => {
+    setSelectedTime(time);
+    form.setValue("time", time);
+    
+    // Scroll to next section (service selection) after time is selected
+    setTimeout(() => {
+      const serviceSection = document.querySelector('[data-tour="service-selection"]');
+      if (serviceSection) {
+        serviceSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  };
+
   return (
     <div className="space-y-8">
       {/* Calendar Overview */}
@@ -206,6 +224,7 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
         onDateSelect={handleCalendarDateSelect}
         selectedBarber={selectedBarber}
         onQuickBook={handleQuickBook}
+        onTimeSelect={handleTimeSelect}
       />
 
       <div className="grid lg:grid-cols-3 gap-8">

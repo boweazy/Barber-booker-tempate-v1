@@ -11,10 +11,11 @@ import type { Booking, Barber, Service } from "@shared/schema";
 interface CalendarViewProps {
   onDateSelect?: (date: string) => void;
   selectedBarber?: number | null;
-  onQuickBook?: (date: string, barberId?: number) => void;
+  onQuickBook?: (date: string, time?: string, barberId?: number) => void;
+  onTimeSelect?: (time: string) => void;
 }
 
-export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: CalendarViewProps) {
+export function CalendarView({ onDateSelect, selectedBarber, onQuickBook, onTimeSelect }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [showTimeSelector, setShowTimeSelector] = useState(false);
@@ -346,9 +347,12 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
         onTimeSelect={(time) => {
           setSelectedDate(timeSelectorDate);
           onDateSelect?.(timeSelectorDate);
+          onTimeSelect?.(time);
+          setShowTimeSelector(false);
         }}
         onQuickBook={(date, time, barberId) => {
-          onQuickBook?.(date, barberId);
+          onQuickBook?.(date, time, barberId);
+          setShowTimeSelector(false);
         }}
       />
     </Card>
