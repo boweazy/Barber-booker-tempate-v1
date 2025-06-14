@@ -225,7 +225,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
                     : todayClass
                     ? 'bg-gradient-to-br from-green-200 to-emerald-200 border-green-400 hover:bg-gradient-to-br hover:from-green-300 hover:to-emerald-300 text-foreground'
                     : dayBookings.length > 0
-                    ? 'bg-gradient-to-br from-orange-200 to-amber-200 border-orange-300 hover:bg-gradient-to-br hover:from-orange-300 hover:to-amber-300 text-foreground'
+                    ? 'bg-gradient-to-br from-red-200 to-red-200 border-red-300 hover:bg-gradient-to-br hover:from-red-300 hover:to-red-300 text-foreground'
                     : 'bg-muted hover:bg-secondary hover:border-primary/50 text-card-foreground'
                   }
                 `}
@@ -327,7 +327,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook }: Cale
             <span className="text-slate-600">Available</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded"></div>
+            <div className="w-3 h-3 bg-gradient-to-br from-red-50 to-red-50 border border-red-200 rounded"></div>
             <span className="text-slate-600">Has Bookings</span>
           </div>
           <div className="flex items-center space-x-2">
