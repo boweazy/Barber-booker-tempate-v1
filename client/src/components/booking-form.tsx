@@ -20,6 +20,7 @@ import type { Barber, Service } from "@shared/schema";
 const bookingSchema = z.object({
   customerName: z.string().min(2, "Name must be at least 2 characters"),
   customerPhone: z.string().min(10, "Please enter a valid phone number"),
+  customerEmail: z.string().email("Please enter a valid email").optional(),
   barberId: z.number().min(1, "Please select a barber"),
   serviceId: z.number().min(1, "Please select a service"),
   date: z.string().min(1, "Please select a date"),
@@ -28,7 +29,11 @@ const bookingSchema = z.object({
 
 type BookingFormData = z.infer<typeof bookingSchema>;
 
-export function BookingForm() {
+interface BookingFormProps {
+  onBookingComplete?: (result: { aiMessage?: string }) => void;
+}
+
+export function BookingForm({ onBookingComplete }: BookingFormProps) {
   const [selectedBarber, setSelectedBarber] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
@@ -44,6 +49,7 @@ export function BookingForm() {
     defaultValues: {
       customerName: "",
       customerPhone: "",
+      customerEmail: "",
       barberId: 0,
       serviceId: 0,
       date: "",
@@ -73,7 +79,7 @@ export function BookingForm() {
   // Create booking mutation
   const createBookingMutation = useMutation({
     mutationFn: api.createBooking,
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
       queryClient.invalidateQueries({ queryKey: ["/api/availability"] });
       
@@ -87,6 +93,12 @@ export function BookingForm() {
         servicePrice: selectedServiceData?.price || 0,
       });
       setShowSuccessModal(true);
+      
+      // Call the callback with AI message if provided
+      if (onBookingComplete && data.aiMessage) {
+        onBookingComplete({ aiMessage: data.aiMessage });
+      }
+      
       form.reset();
       setSelectedBarber(null);
       setSelectedDate("");
@@ -106,6 +118,7 @@ export function BookingForm() {
     createBookingMutation.mutate({
       customerName: data.customerName,
       customerPhone: data.customerPhone,
+      customerEmail: data.customerEmail,
       barberId: data.barberId,
       serviceId: data.serviceId,
       date: data.date,

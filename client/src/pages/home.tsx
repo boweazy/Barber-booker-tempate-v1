@@ -17,6 +17,7 @@ export default function Home() {
   const [showTour, setShowTour] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showPolicy, setShowPolicy] = useState(false);
+  const [showLoyalty, setShowLoyalty] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -191,7 +192,19 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeView === "booking" && <BookingForm />}
+        {activeView === "booking" && (
+          <>
+            <BookingForm onBookingComplete={result => {
+              if (result.aiMessage) setAiMessage(result.aiMessage);
+            }} />
+            {aiMessage && (
+              <div className="mt-6 p-4 bg-slate-100 rounded-lg">
+                <h3 className="font-semibold mb-2">Your Confirmation Message</h3>
+                <p>{aiMessage}</p>
+              </div>
+            )}
+          </>
+        )}
         {activeView === "admin" && <AdminDashboard />}
         {activeView === "oauth" && <GoogleOAuthSetup />}
         {activeView === "features" && (
