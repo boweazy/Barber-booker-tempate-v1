@@ -32,11 +32,8 @@ import {
   RevenueWidget,
   QuickActionsWidget,
   RecentActivityWidget,
-  PerformanceWidget,
-  StatsWidget
+  PerformanceWidget
 } from "./dashboard-widgets";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
 
 interface DashboardWidget {
   id: string;
@@ -64,33 +61,20 @@ function SortableWidget({ widget, children }: { widget: DashboardWidget; childre
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const sizeClasses = {
-    small: 'col-span-1',
-    medium: 'col-span-1 md:col-span-2',
-    large: 'col-span-1 md:col-span-2 lg:col-span-3'
-  };
-
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`${sizeClasses[widget.size]} relative group`}
+      {...attributes}
+      {...listeners}
+      className="touch-none"
     >
-      <div className="relative">
-        <div
-          {...attributes}
-          {...listeners}
-          className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity cursor-move bg-white/90 rounded p-1 shadow-md"
-        >
-          <GripVertical className="w-4 h-4 text-gray-500" />
-        </div>
-        {children}
-      </div>
+      {children}
     </div>
   );
 }
 
-// Widget customization panel
+// Widget Customizer Panel
 function WidgetCustomizer({ 
   widgets, 
   onToggleWidget, 
@@ -99,12 +83,12 @@ function WidgetCustomizer({
 }: {
   widgets: DashboardWidget[];
   onToggleWidget: (id: string) => void;
-  onAddWidget: (widgetType: string) => void;
+  onAddWidget: (type: string) => void;
   onRemoveWidget: (id: string) => void;
 }) {
   const enabledWidgets = widgets.filter(w => w.enabled);
-  const availableWidgetTypes = Object.keys(AVAILABLE_WIDGETS).filter(
-    type => !enabledWidgets.some(w => w.type === type)
+  const availableWidgetTypes = Object.keys(AVAILABLE_WIDGETS).filter(type => 
+    !widgets.some(w => w.type === type && w.enabled)
   );
 
   return (
@@ -159,50 +143,21 @@ function WidgetCustomizer({
                   const widget = AVAILABLE_WIDGETS[type];
                   return (
                     <div key={type} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex-1">
-                        <span className="text-sm font-medium">{widget.title}</span>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
-                            {widget.size}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {widget.category}
-                          </Badge>
-                        </div>
+                      <div className="flex items-center gap-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onAddWidget(type)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                        <span className="text-sm">{widget.title}</span>
+                        <EyeOff className="w-4 h-4 text-gray-400" />
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onAddWidget(type)}
-                        className="h-8 gap-1"
-                      >
-                        <Plus className="w-3 h-3" />
-                        Add
-                      </Button>
                     </div>
                   );
                 })}
-              </div>
-            </div>
-          )}
-
-          {/* Disabled Widgets */}
-          {widgets.some(w => !w.enabled) && (
-            <div>
-              <h3 className="font-medium mb-3">Hidden Widgets</h3>
-              <div className="space-y-2">
-                {widgets.filter(w => !w.enabled).map((widget) => (
-                  <div key={widget.id} className="flex items-center justify-between p-3 bg-gray-100 rounded-lg opacity-60">
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        checked={widget.enabled}
-                        onCheckedChange={() => onToggleWidget(widget.id)}
-                      />
-                      <span className="text-sm">{widget.title}</span>
-                      <EyeOff className="w-4 h-4 text-gray-400" />
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           )}
@@ -215,6 +170,15 @@ function WidgetCustomizer({
 export function CustomizableDashboard() {
   const { toast } = useToast();
   const [widgets, setWidgets] = useState<DashboardWidget[]>([]);
+
+  const getSizeClass = (size: 'small' | 'medium' | 'large') => {
+    switch (size) {
+      case 'small': return 'col-span-1';
+      case 'medium': return 'col-span-2';
+      case 'large': return 'col-span-3';
+      default: return 'col-span-2';
+    }
+  };
 
   // Load dashboard configuration from localStorage
   useEffect(() => {
@@ -249,36 +213,6 @@ export function CustomizableDashboard() {
     setWidgets(defaultWidgets);
   };
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (active.id !== over?.id) {
-      setWidgets((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over?.id);
-
-        const newItems = arrayMove(items, oldIndex, newIndex);
-        return newItems.map((item, index) => ({ ...item, position: index }));
-      });
-
-      toast({
-        title: "Dashboard Updated",
-        description: "Widget order has been saved.",
-      });
-    }
-  };
-
   const handleToggleWidget = (id: string) => {
     setWidgets(prev => prev.map(widget => 
       widget.id === id ? { ...widget, enabled: !widget.enabled } : widget
@@ -311,9 +245,8 @@ export function CustomizableDashboard() {
   };
 
   const renderWidget = (widget: DashboardWidget) => {
-    const WidgetComponent = AVAILABLE_WIDGETS[widget.type]?.component;
-    
-    if (!WidgetComponent) {
+    const widgetConfig = AVAILABLE_WIDGETS[widget.type];
+    if (!widgetConfig) {
       return (
         <Card className="h-32">
           <CardContent className="p-4">
@@ -323,7 +256,53 @@ export function CustomizableDashboard() {
       );
     }
 
-    return <WidgetComponent />;
+    const WidgetComponent = widgetConfig.component;
+    
+    return (
+      <Card className={`${getSizeClass(widget.size)} h-full hover:shadow-lg transition-shadow duration-200 group`}>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium flex items-center justify-between">
+            {widgetConfig.title}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleRemoveWidget(widget.id)}
+              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <WidgetComponent />
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      setWidgets((widgets) => {
+        const oldIndex = widgets.findIndex((widget) => widget.id === active.id);
+        const newIndex = widgets.findIndex((widget) => widget.id === over?.id);
+
+        const reorderedWidgets = arrayMove(widgets, oldIndex, newIndex).map((widget, index) => ({
+          ...widget,
+          position: index
+        }));
+
+        return reorderedWidgets;
+      });
+    }
   };
 
   const enabledWidgets = widgets
@@ -331,7 +310,7 @@ export function CustomizableDashboard() {
     .sort((a, b) => a.position - b.position);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Dashboard Header */}
       <div className="flex items-center justify-between">
         <div>
