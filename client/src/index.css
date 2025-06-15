@@ -67,64 +67,64 @@
 
 .dawn-bg {
   background: linear-gradient(135deg, 
-    #e2e8f0 0%, 
-    #f1f5f9 25%, 
-    #f8fafc 50%, 
-    #cbd5e1 100%
+    #f0f4f1 0%, 
+    #e8f0ea 30%, 
+    #d5e7d9 70%, 
+    #c2dcc7 100%
   );
 }
 
 .morning-bg {
   background: linear-gradient(135deg, 
-    #f0f9ff 0%, 
-    #e0f2fe 25%, 
-    #bae6fd 50%, 
-    #0284c7 100%
+    #f0f4f1 0%, 
+    #e8f0ea 30%, 
+    #d5e7d9 70%, 
+    #c2dcc7 100%
   );
 }
 
 .midday-bg {
   background: linear-gradient(135deg, 
-    #3b82f6 0%, 
-    #1d4ed8 25%, 
-    #1e40af 50%, 
-    #1e3a8a 100%
+    #f0f4f1 0%, 
+    #e8f0ea 30%, 
+    #d5e7d9 70%, 
+    #c2dcc7 100%
   );
 }
 
 .afternoon-bg {
   background: linear-gradient(135deg, 
-    #f3f4f6 0%, 
-    #e5e7eb 25%, 
-    #d1d5db 50%, 
-    #9ca3af 100%
+    #f0f4f1 0%, 
+    #e8f0ea 30%, 
+    #d5e7d9 70%, 
+    #c2dcc7 100%
   );
 }
 
 .evening-bg {
   background: linear-gradient(135deg, 
-    #475569 0%, 
-    #334155 25%, 
-    #1e293b 50%, 
-    #0f172a 100%
+    #f0f4f1 0%, 
+    #e8f0ea 30%, 
+    #d5e7d9 70%, 
+    #c2dcc7 100%
   );
 }
 
 .night-bg {
   background: linear-gradient(135deg, 
-    #2c3e50 0%, 
-    #34495e 25%, 
-    #2c3e50 50%, 
-    #1a252f 100%
+    #f0f4f1 0%, 
+    #e8f0ea 30%, 
+    #d5e7d9 70%, 
+    #c2dcc7 100%
   );
 }
 
 .late-night-bg {
   background: linear-gradient(135deg, 
-    #0c0c0c 0%, 
-    #1a1a2e 25%, 
-    #16213e 50%, 
-    #0f3460 100%
+    #f0f4f1 0%, 
+    #e8f0ea 30%, 
+    #d5e7d9 70%, 
+    #c2dcc7 100%
   );
 }
 
