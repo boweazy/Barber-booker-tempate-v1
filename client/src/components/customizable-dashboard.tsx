@@ -65,8 +65,9 @@ function SortableWidget({ widget, children }: { widget: DashboardWidget; childre
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
+    transition: transition || 'transform 150ms ease',
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 1000 : 1,
   };
 
   return (
@@ -75,7 +76,7 @@ function SortableWidget({ widget, children }: { widget: DashboardWidget; childre
       style={style}
       {...attributes}
       {...listeners}
-      className="touch-none"
+      className={`touch-none cursor-grab active:cursor-grabbing ${isDragging ? 'shadow-2xl scale-105' : ''}`}
     >
       {children}
     </div>
@@ -408,19 +409,21 @@ export function CustomizableDashboard() {
               items={enabledWidgets.map(w => w.id)} 
               strategy={rectSortingStrategy}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {enabledWidgets.map((widget) => (
                   <SortableWidget key={widget.id} widget={widget}>
-                    {renderWidget(widget)}
+                    <div className="transition-all duration-200 ease-out transform hover:scale-[1.02]">
+                      {renderWidget(widget)}
+                    </div>
                   </SortableWidget>
                 ))}
               </div>
             </SortableContext>
           </DndContext>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {enabledWidgets.map((widget) => (
-              <div key={widget.id}>
+              <div key={widget.id} className="transition-all duration-200 ease-out hover:shadow-lg">
                 {renderWidget(widget)}
               </div>
             ))}
