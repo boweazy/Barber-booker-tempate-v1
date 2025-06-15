@@ -8,10 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, DollarSign, Users, Clock, Edit, Trash2, Search, Mail } from "lucide-react";
+import { Calendar, DollarSign, Users, Clock, Edit, Trash2, Search, Mail, BarChart3, CreditCard, Package, UserCheck, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { EmailSetup } from "./email-setup";
-import type { Booking, Barber, Service } from "@shared/schema";
+import { AnalyticsDashboard } from "./analytics-dashboard";
+import { CustomerProfile } from "./customer-profile";
+import { PaymentProcessing } from "./payment-processing";
+import { StaffManagement } from "./staff-management";
+import { InventoryManagement } from "./inventory-management";
+import type { Booking, Barber, Service, Client } from "@shared/schema";
 
 export function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
