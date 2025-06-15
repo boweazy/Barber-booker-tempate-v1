@@ -90,14 +90,21 @@ export function TimeSlotSelector({
     setSelectedTime(time);
     onTimeSelect(time);
     
-    // Auto-advance to next step after selecting time
+    // Close modal first, then scroll to service selection
+    onClose();
+    
+    // Delay to ensure modal is closed before scrolling
     setTimeout(() => {
-      onClose();
       const serviceSection = document.querySelector('[data-tour="service-selection"]');
       if (serviceSection) {
-        serviceSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        serviceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Highlight the service section
+        serviceSection.classList.add('ring-4', 'ring-teal-500', 'ring-opacity-70');
+        setTimeout(() => {
+          serviceSection.classList.remove('ring-4', 'ring-teal-500', 'ring-opacity-70');
+        }, 3000);
       }
-    }, 300);
+    }, 200);
   };
 
   const handleQuickBook = (time: string) => {

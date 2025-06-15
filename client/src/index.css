@@ -4,21 +4,14 @@
 
 @keyframes barber-pole {
   0% { transform: translateY(0); }
-  100% { transform: translateY(-8px); }
+  100% { transform: translateY(-10px); }
 }
 
 .barber-pole-animation {
   animation: barber-pole 2s linear infinite;
   will-change: transform;
-  transform-origin: center center;
-}
-
-/* Ensure consistent animations and panel weights across all screen sizes */
-@media (max-width: 1024px) {
-  .barber-pole-animation {
-    animation: barber-pole 2s linear infinite;
-    transform-origin: center center;
-  }
+  transform-origin: 50% 50%;
+  animation-fill-mode: both;
 }
 
 /* Fix panel layering and weight consistency */
