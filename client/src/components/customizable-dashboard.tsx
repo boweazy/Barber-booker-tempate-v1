@@ -31,9 +31,11 @@ import {
   AVAILABLE_WIDGETS,
   TodayBookingsWidget,
   RevenueWidget,
-  QuickActionsWidget,
   RecentActivityWidget,
-  PerformanceWidget
+  PerformanceWidget,
+  DailyEarningsWidget,
+  AchievementsWidget,
+  EnhancedQuickActionsWidget
 } from "./dashboard-widgets";
 
 interface DashboardWidget {
@@ -46,10 +48,11 @@ interface DashboardWidget {
 }
 
 const DEFAULT_WIDGETS: DashboardWidget[] = [
-  { id: '1', type: 'today-bookings', title: 'Today\'s Bookings', enabled: true, position: 0, size: 'medium' },
-  { id: '2', type: 'revenue', title: 'Revenue Overview', enabled: true, position: 1, size: 'medium' },
-  { id: '3', type: 'quick-stats', title: 'Quick Stats', enabled: true, position: 2, size: 'small' },
-  { id: '4', type: 'recent-clients', title: 'Recent Clients', enabled: true, position: 3, size: 'medium' },
+  { id: '1', type: 'daily-earnings', title: 'Daily Earnings Tracker', enabled: true, position: 0, size: 'medium' },
+  { id: '2', type: 'achievements', title: 'Performance Achievements', enabled: true, position: 1, size: 'medium' },
+  { id: '3', type: 'enhanced-actions', title: 'Quick Actions Pro', enabled: true, position: 2, size: 'medium' },
+  { id: '4', type: 'today-bookings', title: 'Today\'s Schedule', enabled: true, position: 3, size: 'medium' },
+  { id: '5', type: 'recent-activity', title: 'Recent Activity', enabled: true, position: 4, size: 'medium' },
 ];
 
 // Sortable Widget Wrapper

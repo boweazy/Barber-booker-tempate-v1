@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, DollarSign, Users, Clock, TrendingUp, Star, Package, AlertTriangle, CheckCircle } from "lucide-react";
+import { Calendar, DollarSign, Users, Clock, TrendingUp, Star, Package, AlertTriangle, CheckCircle, Award, Target, Zap, Heart, Trophy, Gift } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Booking, Barber, Service, Client } from "@shared/schema";
 
@@ -17,7 +17,7 @@ export interface Widget {
   enabled: boolean;
 }
 
-// Statistics Widget
+// Enhanced Statistics Widget with animations
 export function StatsWidget({ title, value, icon: Icon, trend, color = "blue" }: {
   title: string;
   value: string | number;
@@ -26,25 +26,28 @@ export function StatsWidget({ title, value, icon: Icon, trend, color = "blue" }:
   color?: "blue" | "green" | "orange" | "purple";
 }) {
   const colorClasses: Record<string, string> = {
-    blue: "from-blue-500 to-blue-600 text-blue-600",
-    green: "from-green-500 to-green-600 text-green-600",
-    orange: "from-orange-500 to-orange-600 text-orange-600",
-    purple: "from-purple-500 to-purple-600 text-purple-600"
+    blue: "from-blue-500 to-blue-600 text-blue-600 shadow-blue-500/25",
+    green: "from-green-500 to-green-600 text-green-600 shadow-green-500/25",
+    orange: "from-orange-500 to-orange-600 text-orange-600 shadow-orange-500/25",
+    purple: "from-purple-500 to-purple-600 text-purple-600 shadow-purple-500/25"
   };
 
   return (
-    <Card className="h-32 hover:shadow-lg transition-shadow duration-200">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
+    <Card className="h-36 hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 bg-gradient-to-br from-white to-slate-50/50 border-slate-200/60">
+      <CardContent className="p-5">
+        <div className="flex items-center justify-between h-full">
           <div className="flex-1">
-            <p className="text-sm font-medium text-slate-600">{title}</p>
-            <p className="text-2xl font-bold text-slate-900">{value}</p>
+            <p className="text-sm font-semibold text-slate-600 uppercase tracking-wide">{title}</p>
+            <p className="text-3xl font-bold text-slate-900 mt-2">{value}</p>
             {trend && (
-              <p className="text-xs text-slate-500 mt-1">{trend}</p>
+              <p className="text-xs text-slate-500 mt-1 flex items-center">
+                <TrendingUp className="w-3 h-3 mr-1" />
+                {trend}
+              </p>
             )}
           </div>
-          <div className={`w-12 h-12 bg-gradient-to-br ${colorClasses[color]} rounded-xl flex items-center justify-center shadow-lg`}>
-            <Icon className="text-white w-6 h-6" />
+          <div className={`w-14 h-14 bg-gradient-to-br ${colorClasses[color]} rounded-xl flex items-center justify-center shadow-lg`}>
+            <Icon className="text-white w-7 h-7" />
           </div>
         </div>
       </CardContent>
@@ -208,6 +211,168 @@ export function QuickActionsWidget() {
   );
 }
 
+// Daily Earnings Tracker Widget
+export function DailyEarningsWidget() {
+  const { data: bookings = [] } = useQuery({
+    queryKey: ["/api/bookings"],
+    queryFn: api.getBookings,
+  });
+
+  const today = new Date().toISOString().split('T')[0];
+  const todayBookings = bookings.filter(b => b.date === today && b.status === 'completed');
+  const todayEarnings = todayBookings.reduce((sum, b) => sum + (b.depositAmount || 0), 0);
+  const goalAmount = 500; // Daily goal
+  const progressPercentage = Math.min((todayEarnings / goalAmount) * 100, 100);
+
+  return (
+    <Card className="h-48 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 hover:shadow-xl transition-all duration-300">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg flex items-center text-green-800">
+          <DollarSign className="w-5 h-5 mr-2" />
+          Today's Earnings
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex items-end gap-2">
+            <span className="text-3xl font-bold text-green-700">${todayEarnings}</span>
+            <span className="text-sm text-green-600">/ ${goalAmount}</span>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-green-700">Progress to Goal</span>
+              <span className="text-green-600">{Math.round(progressPercentage)}%</span>
+            </div>
+            <div className="w-full bg-green-200 rounded-full h-3">
+              <div 
+                className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500"
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          <div className="flex justify-between text-xs text-green-600">
+            <span>{todayBookings.length} completed appointments</span>
+            <span>{goalAmount - todayEarnings > 0 ? `$${goalAmount - todayEarnings} to go` : 'Goal achieved! 🎉'}</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Performance Achievements Widget
+export function AchievementsWidget() {
+  const { data: bookings = [] } = useQuery({
+    queryKey: ["/api/bookings"],
+    queryFn: api.getBookings,
+  });
+
+  const completedBookings = bookings.filter(b => b.status === 'completed');
+  const thisWeekBookings = completedBookings.filter(b => {
+    const bookingDate = new Date(b.date);
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    return bookingDate >= weekStart;
+  });
+
+  const achievements = [
+    {
+      title: "Perfect Week",
+      description: "5+ appointments completed",
+      achieved: thisWeekBookings.length >= 5,
+      icon: Trophy,
+      color: "text-yellow-600"
+    },
+    {
+      title: "Customer Favorite",
+      description: "High satisfaction rate",
+      achieved: completedBookings.length > 10,
+      icon: Heart,
+      color: "text-red-500"
+    },
+    {
+      title: "Rising Star",
+      description: "Growing clientele",
+      achieved: completedBookings.length > 25,
+      icon: Star,
+      color: "text-blue-500"
+    }
+  ];
+
+  return (
+    <Card className="h-64 bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200 hover:shadow-xl transition-all duration-300">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center text-purple-800">
+          <Award className="w-5 h-5 mr-2" />
+          Achievements
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {achievements.map((achievement, index) => (
+          <div key={index} className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+            achievement.achieved 
+              ? 'bg-white shadow-sm border border-purple-200' 
+              : 'bg-purple-100/50 opacity-60'
+          }`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              achievement.achieved 
+                ? 'bg-gradient-to-r from-purple-500 to-purple-600' 
+                : 'bg-gray-300'
+            }`}>
+              <achievement.icon className={`w-4 h-4 ${achievement.achieved ? 'text-white' : 'text-gray-500'}`} />
+            </div>
+            <div className="flex-1">
+              <p className={`text-sm font-medium ${achievement.achieved ? 'text-purple-900' : 'text-gray-500'}`}>
+                {achievement.title}
+              </p>
+              <p className={`text-xs ${achievement.achieved ? 'text-purple-600' : 'text-gray-400'}`}>
+                {achievement.description}
+              </p>
+            </div>
+            {achievement.achieved && (
+              <CheckCircle className="w-5 h-5 text-green-500" />
+            )}
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+// Quick Actions Widget with enhanced styling
+export function EnhancedQuickActionsWidget() {
+  const actions = [
+    { label: "New Booking", icon: Calendar, color: "from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700" },
+    { label: "Add Customer", icon: Users, color: "from-green-500 to-green-600 hover:from-green-600 hover:to-green-700" },
+    { label: "Process Payment", icon: DollarSign, color: "from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700" },
+    { label: "Quick Check-in", icon: Zap, color: "from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700" }
+  ];
+
+  return (
+    <Card className="h-72 bg-gradient-to-br from-slate-50 to-gray-50 border-slate-200 hover:shadow-xl transition-all duration-300">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center text-slate-800">
+          <Target className="w-5 h-5 mr-2" />
+          Quick Actions
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {actions.map((action, index) => (
+          <Button 
+            key={index}
+            className={`w-full justify-start h-12 bg-gradient-to-r ${action.color} text-white shadow-md transition-all duration-200 transform hover:scale-105 hover:shadow-lg`}
+          >
+            <action.icon className="w-5 h-5 mr-3" />
+            {action.label}
+          </Button>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
 // Recent Activity Widget
 export function RecentActivityWidget() {
   const { data: bookings = [] } = useQuery({
@@ -311,6 +476,27 @@ export const AVAILABLE_WIDGETS: Record<string, {
   size: 'small' | 'medium' | 'large';
   category: string;
 }> = {
+  'daily-earnings': {
+    id: 'daily-earnings',
+    title: "Daily Earnings Tracker",
+    component: DailyEarningsWidget,
+    size: 'medium',
+    category: 'finance'
+  },
+  'achievements': {
+    id: 'achievements',
+    title: 'Performance Achievements',
+    component: AchievementsWidget,
+    size: 'medium',
+    category: 'motivation'
+  },
+  'enhanced-actions': {
+    id: 'enhanced-actions',
+    title: 'Quick Actions Pro',
+    component: EnhancedQuickActionsWidget,
+    size: 'medium',
+    category: 'actions'
+  },
   'today-bookings': {
     id: 'today-bookings',
     title: "Today's Bookings",
@@ -320,17 +506,10 @@ export const AVAILABLE_WIDGETS: Record<string, {
   },
   'revenue': {
     id: 'revenue',
-    title: 'Revenue',
+    title: 'Revenue Overview',
     component: RevenueWidget,
     size: 'medium',
     category: 'finance'
-  },
-  'quick-actions': {
-    id: 'quick-actions',
-    title: 'Quick Actions',
-    component: QuickActionsWidget,
-    size: 'small',
-    category: 'actions'
   },
   'recent-activity': {
     id: 'recent-activity',
@@ -341,7 +520,7 @@ export const AVAILABLE_WIDGETS: Record<string, {
   },
   'performance': {
     id: 'performance',
-    title: 'Performance',
+    title: 'Performance Metrics',
     component: PerformanceWidget,
     size: 'medium',
     category: 'analytics'
