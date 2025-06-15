@@ -96,10 +96,15 @@ export default function Home() {
             <div className="flex items-center space-x-2 sm:space-x-4">
               <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800 rounded-xl flex items-center justify-center shadow-lg relative overflow-hidden border border-teal-500/20">
                 <svg className="w-7 h-7 sm:w-8 sm:h-8 text-white" viewBox="0 0 24 24" fill="none" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <clipPath id="pole-clip">
+                      <rect x="10" y="2" width="4" height="20" rx="2"/>
+                    </clipPath>
+                  </defs>
                   <rect x="10" y="2" width="4" height="20" fill="currentColor" rx="2"/>
-                  <g className="barber-pole-animation" style={{ transformOrigin: '12px 12px' }}>
-                    <path d="M8 4l8 4-8 4 8 4-8 4" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" fill="none"/>
-                    <path d="M10 4l4 2-4 2 4 2-4 2 4 2-4 2" stroke="rgba(239,68,68,0.9)" strokeWidth="2" fill="none"/>
+                  <g className="barber-pole-animation" clipPath="url(#pole-clip)" style={{ transformOrigin: '12px 12px' }}>
+                    <path d="M10 2l4 3-4 3 4 3-4 3 4 3-4 3 4 3" stroke="rgba(255,255,255,0.6)" strokeWidth="1.2" fill="none"/>
+                    <path d="M10 0l4 3-4 3 4 3-4 3 4 3-4 3 4 3-4 3" stroke="rgba(220,38,38,0.6)" strokeWidth="1.5" fill="none"/>
                   </g>
                   <circle cx="12" cy="3" r="1.5" fill="rgba(255,255,255,0.9)" />
                   <circle cx="12" cy="21" r="1.5" fill="rgba(255,255,255,0.9)" />
