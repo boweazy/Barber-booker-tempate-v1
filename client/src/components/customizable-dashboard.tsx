@@ -1,0 +1,390 @@
+import { useState, useEffect } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Settings, GripVertical, Plus, X, Eye, EyeOff } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  AVAILABLE_WIDGETS,
+  TodayBookingsWidget,
+  RevenueWidget,
+  QuickActionsWidget,
+  RecentActivityWidget,
+  PerformanceWidget,
+  StatsWidget
+} from "./dashboard-widgets";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+
+interface DashboardWidget {
+  id: string;
+  type: string;
+  title: string;
+  enabled: boolean;
+  position: number;
+  size: 'small' | 'medium' | 'large';
+}
+
+// Sortable Widget Wrapper
+function SortableWidget({ widget, children }: { widget: DashboardWidget; children: React.ReactNode }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: widget.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const sizeClasses = {
+    small: 'col-span-1',
+    medium: 'col-span-1 md:col-span-2',
+    large: 'col-span-1 md:col-span-2 lg:col-span-3'
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`${sizeClasses[widget.size]} relative group`}
+    >
+      <div className="relative">
+        <div
+          {...attributes}
+          {...listeners}
+          className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity cursor-move bg-white/90 rounded p-1 shadow-md"
+        >
+          <GripVertical className="w-4 h-4 text-gray-500" />
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Widget customization panel
+function WidgetCustomizer({ 
+  widgets, 
+  onToggleWidget, 
+  onAddWidget, 
+  onRemoveWidget 
+}: {
+  widgets: DashboardWidget[];
+  onToggleWidget: (id: string) => void;
+  onAddWidget: (widgetType: string) => void;
+  onRemoveWidget: (id: string) => void;
+}) {
+  const enabledWidgets = widgets.filter(w => w.enabled);
+  const availableWidgetTypes = Object.keys(AVAILABLE_WIDGETS).filter(
+    type => !enabledWidgets.some(w => w.type === type)
+  );
+
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="sm" className="gap-2">
+          <Settings className="w-4 h-4" />
+          Customize Dashboard
+        </Button>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Dashboard Widgets</SheetTitle>
+        </SheetHeader>
+        
+        <div className="space-y-6 mt-6">
+          {/* Active Widgets */}
+          <div>
+            <h3 className="font-medium mb-3">Active Widgets</h3>
+            <div className="space-y-2">
+              {enabledWidgets.map((widget) => (
+                <div key={widget.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      checked={widget.enabled}
+                      onCheckedChange={() => onToggleWidget(widget.id)}
+                    />
+                    <span className="text-sm font-medium">{widget.title}</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {widget.size}
+                    </Badge>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onRemoveWidget(widget.id)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Available Widgets */}
+          {availableWidgetTypes.length > 0 && (
+            <div>
+              <h3 className="font-medium mb-3">Available Widgets</h3>
+              <div className="space-y-2">
+                {availableWidgetTypes.map((type) => {
+                  const widget = AVAILABLE_WIDGETS[type];
+                  return (
+                    <div key={type} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex-1">
+                        <span className="text-sm font-medium">{widget.title}</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs">
+                            {widget.size}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {widget.category}
+                          </Badge>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onAddWidget(type)}
+                        className="h-8 gap-1"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Add
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Disabled Widgets */}
+          {widgets.some(w => !w.enabled) && (
+            <div>
+              <h3 className="font-medium mb-3">Hidden Widgets</h3>
+              <div className="space-y-2">
+                {widgets.filter(w => !w.enabled).map((widget) => (
+                  <div key={widget.id} className="flex items-center justify-between p-3 bg-gray-100 rounded-lg opacity-60">
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        checked={widget.enabled}
+                        onCheckedChange={() => onToggleWidget(widget.id)}
+                      />
+                      <span className="text-sm">{widget.title}</span>
+                      <EyeOff className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+export function CustomizableDashboard() {
+  const { toast } = useToast();
+  const [widgets, setWidgets] = useState<DashboardWidget[]>([]);
+
+  // Load dashboard configuration from localStorage
+  useEffect(() => {
+    const savedConfig = localStorage.getItem('dashboard-config');
+    if (savedConfig) {
+      try {
+        setWidgets(JSON.parse(savedConfig));
+      } catch (error) {
+        console.error('Failed to load dashboard config:', error);
+        setDefaultWidgets();
+      }
+    } else {
+      setDefaultWidgets();
+    }
+  }, []);
+
+  // Save dashboard configuration to localStorage
+  useEffect(() => {
+    if (widgets.length > 0) {
+      localStorage.setItem('dashboard-config', JSON.stringify(widgets));
+    }
+  }, [widgets]);
+
+  const setDefaultWidgets = () => {
+    const defaultWidgets: DashboardWidget[] = [
+      { id: 'today-bookings-1', type: 'today-bookings', title: "Today's Bookings", enabled: true, position: 0, size: 'medium' },
+      { id: 'revenue-1', type: 'revenue', title: 'Revenue', enabled: true, position: 1, size: 'medium' },
+      { id: 'quick-actions-1', type: 'quick-actions', title: 'Quick Actions', enabled: true, position: 2, size: 'small' },
+      { id: 'recent-activity-1', type: 'recent-activity', title: 'Recent Activity', enabled: true, position: 3, size: 'medium' },
+      { id: 'performance-1', type: 'performance', title: 'Performance', enabled: true, position: 4, size: 'medium' },
+    ];
+    setWidgets(defaultWidgets);
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      setWidgets((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over?.id);
+
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        return newItems.map((item, index) => ({ ...item, position: index }));
+      });
+
+      toast({
+        title: "Dashboard Updated",
+        description: "Widget order has been saved.",
+      });
+    }
+  };
+
+  const handleToggleWidget = (id: string) => {
+    setWidgets(prev => prev.map(widget => 
+      widget.id === id ? { ...widget, enabled: !widget.enabled } : widget
+    ));
+  };
+
+  const handleAddWidget = (widgetType: string) => {
+    const newWidget: DashboardWidget = {
+      id: `${widgetType}-${Date.now()}`,
+      type: widgetType,
+      title: AVAILABLE_WIDGETS[widgetType].title,
+      enabled: true,
+      position: widgets.length,
+      size: AVAILABLE_WIDGETS[widgetType].size as 'small' | 'medium' | 'large'
+    };
+    
+    setWidgets(prev => [...prev, newWidget]);
+    toast({
+      title: "Widget Added",
+      description: `${newWidget.title} has been added to your dashboard.`,
+    });
+  };
+
+  const handleRemoveWidget = (id: string) => {
+    setWidgets(prev => prev.filter(widget => widget.id !== id));
+    toast({
+      title: "Widget Removed",
+      description: "Widget has been removed from your dashboard.",
+    });
+  };
+
+  const renderWidget = (widget: DashboardWidget) => {
+    const WidgetComponent = AVAILABLE_WIDGETS[widget.type]?.component;
+    
+    if (!WidgetComponent) {
+      return (
+        <Card className="h-32">
+          <CardContent className="p-4">
+            <p className="text-center text-gray-500">Widget not found: {widget.type}</p>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    return <WidgetComponent />;
+  };
+
+  const enabledWidgets = widgets
+    .filter(widget => widget.enabled)
+    .sort((a, b) => a.position - b.position);
+
+  return (
+    <div className="space-y-6">
+      {/* Dashboard Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-gray-600">Monitor your barbershop performance</p>
+        </div>
+        <WidgetCustomizer
+          widgets={widgets}
+          onToggleWidget={handleToggleWidget}
+          onAddWidget={handleAddWidget}
+          onRemoveWidget={handleRemoveWidget}
+        />
+      </div>
+
+      {/* Widgets Grid */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext 
+          items={enabledWidgets.map(w => w.id)} 
+          strategy={rectSortingStrategy}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {enabledWidgets.map((widget) => (
+              <SortableWidget key={widget.id} widget={widget}>
+                {renderWidget(widget)}
+              </SortableWidget>
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+
+      {enabledWidgets.length === 0 && (
+        <Card className="p-8 text-center">
+          <div className="space-y-4">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+              <Settings className="w-8 h-8 text-gray-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium">No widgets enabled</h3>
+              <p className="text-gray-600">Customize your dashboard by adding widgets</p>
+            </div>
+            <WidgetCustomizer
+              widgets={widgets}
+              onToggleWidget={handleToggleWidget}
+              onAddWidget={handleAddWidget}
+              onRemoveWidget={handleRemoveWidget}
+            />
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}
