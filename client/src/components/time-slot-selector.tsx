@@ -87,24 +87,12 @@ export function TimeSlotSelector({
   const availableSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
 
   const handleTimeSelect = (time: string) => {
+    console.log('⏰ Time slot clicked:', time);
     setSelectedTime(time);
+    console.log('🔄 Calling onTimeSelect with:', time);
     onTimeSelect(time);
-    
-    // Close modal first, then scroll to service selection
+    console.log('🚪 Closing modal');
     onClose();
-    
-    // Delay to ensure modal is closed before scrolling
-    setTimeout(() => {
-      const serviceSection = document.querySelector('[data-tour="service-selection"]');
-      if (serviceSection) {
-        serviceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // Highlight the service section
-        serviceSection.classList.add('ring-4', 'ring-teal-500', 'ring-opacity-70');
-        setTimeout(() => {
-          serviceSection.classList.remove('ring-4', 'ring-teal-500', 'ring-opacity-70');
-        }, 3000);
-      }
-    }, 200);
   };
 
   const handleQuickBook = (time: string) => {

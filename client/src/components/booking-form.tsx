@@ -205,25 +205,29 @@ export function BookingForm({ onBookingComplete }: BookingFormProps) {
   };
 
   const handleTimeSelect = (time: string) => {
+    console.log('🔥 Time selected:', time);
     setSelectedTime(time);
     form.setValue("time", time);
     
     // Auto-advance to service selection after time is selected
     setTimeout(() => {
       const serviceSection = document.querySelector('[data-tour="service-selection"]');
-      const bookingFormElement = document.querySelector('[data-booking-form]');
+      console.log('🎯 Service section found:', serviceSection);
       
-      if (serviceSection && bookingFormElement) {
-        // Scroll to service section within the form
+      if (serviceSection) {
+        // Scroll to service section
         serviceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        console.log('📍 Scrolled to service section');
         
         // Add visual highlight to service section
         serviceSection.classList.add('ring-4', 'ring-teal-500', 'ring-opacity-60', 'transition-all', 'duration-300');
         setTimeout(() => {
           serviceSection.classList.remove('ring-4', 'ring-teal-500', 'ring-opacity-60', 'transition-all', 'duration-300');
         }, 3000);
+      } else {
+        console.log('❌ Service section not found');
       }
-    }, 300);
+    }, 500);
   };
 
   return (
