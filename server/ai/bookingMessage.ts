@@ -6,7 +6,7 @@ const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPE
 export async function generateBookingMessage(customerName: string, date: string, time: string): Promise<string> {
   if (!openai) {
     // Return a professional confirmation message if OpenAI is not configured
-    return `Dear ${customerName}, your appointment is confirmed for ${date} at ${time}. We look forward to seeing you at our barbershop. Please arrive 5 minutes early and bring a valid ID. If you need to reschedule or cancel, please call us at least 24 hours in advance. Thank you for choosing our services!`;
+    return `Dear ${customerName}, your appointment is confirmed for ${date} at ${time}. We look forward to providing you with exceptional barbershop services at BarberFlow Systems. Please arrive 5 minutes early and bring a valid ID. If you need to reschedule or cancel, please contact us at least 24 hours in advance. Thank you for choosing BarberFlow Systems!`;
   }
 
   try {
@@ -46,8 +46,8 @@ export async function sendEmailConfirmation(email: string, message: string): Pro
       
       const msg = {
         to: email,
-        from: process.env.FROM_EMAIL || 'bookings@smartflowsystems.com',
-        subject: 'Booking Confirmation - Smart Flow Systems',
+        from: process.env.FROM_EMAIL || 'bookings@barberflowsystems.com',
+        subject: 'Booking Confirmation - BarberFlow Systems',
         text: message,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
