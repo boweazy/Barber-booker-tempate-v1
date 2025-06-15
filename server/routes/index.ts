@@ -7,6 +7,14 @@ import { storage } from "../storage";
 import { googleAuthService } from "../auth/google";
 import { insertBookingSchema, insertClientSchema, insertServiceSchema, insertBarberSchema, insertAdminUserSchema, type Booking } from "../../shared/schema";
 import connectPgSimple from "connect-pg-simple";
+import Stripe from "stripe";
+
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2023-10-16",
+});
 
 export async function registerRoutes(app: Express) {
   const server = createServer(app);
@@ -230,6 +238,42 @@ export async function registerRoutes(app: Express) {
     res.status(400).json({ error: "Failed to create booking" });
   }
 });
+
+  // Stripe payment route for payment intents
+  app.post("/api/create-payment-intent", async (req, res) => {
+    try {
+      const { amount, currency = "usd", description, bookingId, clientId, paymentType } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: "Valid amount is required" });
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount), // Amount in cents
+        currency,
+        description: description || "Barbershop service payment",
+        metadata: {
+          bookingId: bookingId?.toString() || "",
+          clientId: clientId?.toString() || "",
+          paymentType: paymentType || "service"
+        },
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id 
+      });
+    } catch (error: any) {
+      console.error("Stripe payment intent error:", error);
+      res.status(500).json({ 
+        error: "Error creating payment intent", 
+        message: error.message 
+      });
+    }
+  });
 
   // Test email endpoint
   app.post("/api/test-email", async (req, res) => {
