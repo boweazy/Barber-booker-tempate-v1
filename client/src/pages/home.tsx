@@ -6,6 +6,7 @@ import { LoyaltyProgram } from "@/components/loyalty-program";
 import { NotificationSettings } from "@/components/notification-settings";
 import { CancellationPolicy } from "@/components/cancellation-policy";
 import { GoogleOAuthSetup } from "@/components/google-oauth-setup";
+import { BookingAssistant } from "@/components/booking-assistant";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -518,6 +519,9 @@ export default function Home() {
 
       {/* Onboarding Tour */}
       <OnboardingTour isVisible={showTour} onComplete={handleTourComplete} />
+      
+      {/* Booking Assistant Chat */}
+      <BookingAssistant />
     </div>
   );
 }
