@@ -42,6 +42,16 @@ html, body {
   z-index: 1;
 }
 
+/* Light green background for consistent theming */
+.light-green-bg {
+  background: linear-gradient(135deg, 
+    #f0f4f1 0%, 
+    #e8f0ea 30%, 
+    #d5e7d9 70%, 
+    #c2dcc7 100%
+  );
+}
+
 .panel-overlay {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);

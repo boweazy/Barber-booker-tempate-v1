@@ -10,13 +10,13 @@ interface TimeConfig {
 }
 
 const TIME_PERIODS: TimeConfig[] = [
-  { period: 'late-night', className: 'late-night-bg', textColor: 'text-white', overlayOpacity: 'bg-black/20' }, // 0-5
-  { period: 'dawn', className: 'dawn-bg', textColor: 'text-slate-800', overlayOpacity: 'bg-white/10' }, // 5-7
-  { period: 'morning', className: 'morning-bg', textColor: 'text-slate-800', overlayOpacity: 'bg-white/10' }, // 7-11
-  { period: 'midday', className: 'midday-bg', textColor: 'text-white', overlayOpacity: 'bg-black/10' }, // 11-14
-  { period: 'afternoon', className: 'afternoon-bg', textColor: 'text-slate-800', overlayOpacity: 'bg-white/10' }, // 14-17
-  { period: 'evening', className: 'evening-bg', textColor: 'text-white', overlayOpacity: 'bg-black/10' }, // 17-20
-  { period: 'night', className: 'night-bg', textColor: 'text-white', overlayOpacity: 'bg-black/20' }, // 20-24
+  { period: 'late-night', className: 'light-green-bg', textColor: 'text-slate-800', overlayOpacity: 'bg-white/5' }, // 0-5
+  { period: 'dawn', className: 'light-green-bg', textColor: 'text-slate-800', overlayOpacity: 'bg-white/5' }, // 5-7
+  { period: 'morning', className: 'light-green-bg', textColor: 'text-slate-800', overlayOpacity: 'bg-white/5' }, // 7-11
+  { period: 'midday', className: 'light-green-bg', textColor: 'text-slate-800', overlayOpacity: 'bg-white/5' }, // 11-14
+  { period: 'afternoon', className: 'light-green-bg', textColor: 'text-slate-800', overlayOpacity: 'bg-white/5' }, // 14-17
+  { period: 'evening', className: 'light-green-bg', textColor: 'text-slate-800', overlayOpacity: 'bg-white/5' }, // 17-20
+  { period: 'night', className: 'light-green-bg', textColor: 'text-slate-800', overlayOpacity: 'bg-white/5' }, // 20-24
 ];
 
 export function useTimeBackground() {
