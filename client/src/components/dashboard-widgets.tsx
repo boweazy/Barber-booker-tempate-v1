@@ -301,8 +301,14 @@ export function PerformanceWidget() {
   );
 }
 
-// Widget Registry
-export const AVAILABLE_WIDGETS = {
+// Widget Registry with proper typing
+export const AVAILABLE_WIDGETS: Record<string, {
+  id: string;
+  title: string;
+  component: React.ComponentType;
+  size: 'small' | 'medium' | 'large';
+  category: string;
+}> = {
   'today-bookings': {
     id: 'today-bookings',
     title: "Today's Bookings",

@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTimeBackground } from "@/hooks/use-time-background";
-import { CalendarPlus, Settings, HelpCircle, Gift, Bell, Shield, Star, Calendar, Menu, X, Sunrise, Sun, Sunset, Moon } from "lucide-react";
+import { CalendarPlus, Settings, HelpCircle, Gift, Bell, Shield, Star, Calendar, Menu, X, Sunrise, Sun, Sunset, Moon, Layout } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Home() {
    const [activeView, setActiveView] = useState<"booking" | "admin" | "features" | "oauth">("booking");
@@ -155,6 +156,15 @@ export default function Home() {
                 <CalendarPlus className="w-4 h-4" />
                 <span>Book Appointment</span>
               </Button>
+              <Link href="/dashboard">
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2 px-6 py-3 rounded-lg transition-all duration-300 hover:bg-teal-50 hover:text-teal-700"
+                >
+                  <Layout className="w-4 h-4" />
+                  <span>Dashboard</span>
+                </Button>
+              </Link>
               <Button
                 variant={activeView === "features" ? "default" : "ghost"}
                 onClick={() => setActiveView("features")}
