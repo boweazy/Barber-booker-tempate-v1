@@ -216,7 +216,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook, onTime
                 key={day}
                 onClick={() => handleDateClick(day)}
                 className={`
-                  p-1 sm:p-3 min-h-16 sm:min-h-32 border border-border rounded-lg cursor-pointer transition-all duration-200 overflow-hidden
+                  p-1 sm:p-2 min-h-20 sm:min-h-28 border border-border rounded-lg cursor-pointer transition-all duration-200 overflow-hidden flex flex-col
                   ${isSelectedDate 
                     ? 'bg-gradient-to-br from-slate-400 to-slate-500 text-white border-slate-400 shadow-lg' 
                     : pastDate
@@ -234,31 +234,33 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook, onTime
                 </div>
                 
                 {/* Booking indicators - improved layout */}
-                <div className="mt-1 sm:mt-2 space-y-1">
-                  {dayBookings.slice(0, isMobile ? 1 : 2).map((booking, idx) => (
+                <div className="mt-1 sm:mt-2 space-y-0.5">
+                  {dayBookings.slice(0, isMobile ? 2 : 3).map((booking, idx) => (
                     <div
                       key={booking.id}
-                      className={`text-xs px-1 sm:px-2 py-1 rounded-md truncate ${
+                      className={`text-xs px-1 py-0.5 rounded-sm overflow-hidden ${
                         isSelectedDate 
                           ? 'bg-white/20 text-white' 
                           : 'bg-slate-500 text-white'
                       }`}
                       title={`${formatTime(booking.time)} - ${booking.customerName} (${getServiceName(booking.serviceId)})`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-xs">{formatTime(booking.time)}</span>
-                        <User className="w-2 h-2 sm:w-3 sm:h-3" />
+                      <div className="flex items-center justify-between w-full">
+                        <span className="font-medium text-xs truncate flex-1 min-w-0">
+                          {formatTime(booking.time)}
+                        </span>
+                        <User className="w-2 h-2 flex-shrink-0 ml-1" />
                       </div>
                     </div>
                   ))}
                   
-                  {dayBookings.length > 2 && (
-                    <div className={`text-xs px-2 py-1 rounded-md text-center font-medium ${
+                  {dayBookings.length > (isMobile ? 2 : 3) && (
+                    <div className={`text-xs px-1 py-0.5 rounded-sm text-center font-medium ${
                       isSelectedDate 
                         ? 'bg-white/20 text-white' 
                         : 'bg-orange-300 text-slate-800'
                     }`}>
-                      +{dayBookings.length - 2} more bookings
+                      +{dayBookings.length - (isMobile ? 2 : 3)} more
                     </div>
                   )}
                   
@@ -273,7 +275,7 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook, onTime
                         <Button
                           size="sm"
                           variant="outline"
-                          className={`text-xs w-full h-10 sm:h-8 px-2 py-1 font-medium transition-all duration-200 ${
+                          className={`text-xs w-full h-6 sm:h-7 px-1 py-0.5 font-medium transition-all duration-200 ${
                             isSelectedDate 
                               ? 'bg-white/20 text-white border-white/30 hover:bg-white/30' 
                               : 'bg-teal-500 text-white border-teal-500 hover:bg-teal-600 hover:border-teal-600 active:scale-95'
@@ -283,13 +285,13 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook, onTime
                             handleQuickBook(dateString, nextSlot, selectedBarber || undefined);
                           }}
                         >
-                          <Clock className="w-3 h-3 mr-1" />
-                          Book {formatTime(nextSlot)}
+                          <Clock className="w-2 h-2 mr-0.5" />
+                          <span className="truncate">{formatTime(nextSlot)}</span>
                         </Button>
                       );
                     } else if (dayBookings.length === 0) {
                       return (
-                        <div className={`text-xs p-1 rounded text-center ${
+                        <div className={`text-xs px-1 py-0.5 rounded-sm text-center ${
                           isSelectedDate 
                             ? 'bg-white/20 text-white' 
                             : 'bg-slate-100 text-slate-600'
@@ -299,12 +301,12 @@ export function CalendarView({ onDateSelect, selectedBarber, onQuickBook, onTime
                       );
                     } else {
                       return (
-                        <div className={`text-xs p-1 rounded text-center ${
+                        <div className={`text-xs px-1 py-0.5 rounded-sm text-center ${
                           isSelectedDate 
                             ? 'bg-white/20 text-white' 
                             : 'bg-red-100 text-red-600'
                         }`}>
-                          Fully Booked
+                          Full
                         </div>
                       );
                     }
