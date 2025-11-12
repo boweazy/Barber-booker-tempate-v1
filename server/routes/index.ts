@@ -1,5 +1,6 @@
 import { generateBookingMessage, sendEmailConfirmation } from "../ai/bookingMessage";
 import express, { type Express } from "express";
+import lusca from "lusca";
 import session from "express-session";
 import bcrypt from "bcrypt";
 import { createServer } from "http";
@@ -115,6 +116,15 @@ export async function registerRoutes(app: Express) {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   }));
+
+  // CSRF protection middleware
+  app.use(lusca.csrf());
+
+  // Utility route for frontend to fetch CSRF token (optional)
+  app.get("/api/csrf-token", (req, res) => {
+    // lusca places the token at req.csrfToken
+    res.json({ csrfToken: req.csrfToken && req.csrfToken() });
+  });
 
   // Auth middleware
   const requireAuth = (req: any, res: any, next: any) => {
