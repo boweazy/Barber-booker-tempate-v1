@@ -7,6 +7,7 @@ import { NotificationSettings } from "@/components/notification-settings";
 import { CancellationPolicy } from "@/components/cancellation-policy";
 import { GoogleOAuthSetup } from "@/components/google-oauth-setup";
 import { BookingAssistant } from "@/components/booking-assistant";
+import HamburgerMenu from "@/components/HamburgerMenu";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -92,6 +93,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Hamburger Menu */}
+              <HamburgerMenu />
               <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-gold-700 via-gold-600 to-gold-800 rounded-xl flex items-center justify-center shadow-lg relative overflow-hidden border border-gold-500/20">
                 <svg className="w-7 h-7 sm:w-8 sm:h-8 text-black-900" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2"/>
