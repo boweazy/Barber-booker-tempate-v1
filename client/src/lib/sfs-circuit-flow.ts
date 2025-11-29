@@ -20,7 +20,7 @@ class CircuitFlowAnimation {
 
   // Colors from SFS theme
   private readonly colors = {
-    gold: '#d4af37',
+    gold: '#FFD700',
     goldLight: '#e6c454',
     goldDark: '#b8941f',
     goldGlow: '#f4d46f',

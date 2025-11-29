@@ -42,7 +42,7 @@ export default function Memberships() {
       name: "Gold",
       icon: <Crown className="w-8 h-8" />,
       price: { monthly: 149, yearly: 1420 },
-      color: "#d4af37",
+      color: "#FFD700",
       gradient: "from-sf-gold to-sf-gold-light",
       popular: true,
       features: [
